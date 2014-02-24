@@ -1,0 +1,35 @@
+# The distance-omnibus code base uses the VGPS continuum-subtracted 
+#    HI data cubes and two-dimensional 21-cm continuum images.
+# 
+# VGPS data files may be accessed via:
+#      	  http://www.ras.ucalgary.ca/VGPS/VGPS_data.html
+# 
+# This list tells the distance-omnibus code where to find the required files
+#-----------------------------------------------------------------------------
+/d3/VGPS/MOS_017.Tb.fits
+/d3/VGPS/MOS_017_cont.Tb.fits
+/d3/VGPS/MOS_021.Tb.fits
+/d3/VGPS/MOS_021_cont.Tb.fits
+/d3/VGPS/MOS_025.Tb.fits
+/d3/VGPS/MOS_025_cont.Tb.fits
+/d3/VGPS/MOS_029.Tb.fits
+/d3/VGPS/MOS_029_cont.Tb.fits
+/d3/VGPS/MOS_033.Tb.fits
+/d3/VGPS/MOS_033_cont.Tb.fits
+/d3/VGPS/MOS_037.Tb.fits
+/d3/VGPS/MOS_037_cont.Tb.fits
+/d3/VGPS/MOS_041.Tb.fits
+/d3/VGPS/MOS_041_cont.Tb.fits
+/d3/VGPS/MOS_045.Tb.fits
+/d3/VGPS/MOS_045.cont.Tb.fits
+/d3/VGPS/MOS_045_cont.Tb.fits
+/d3/VGPS/MOS_049.Tb.fits
+/d3/VGPS/MOS_049_cont.Tb.fits
+/d3/VGPS/MOS_053.Tb.fits
+/d3/VGPS/MOS_053_cont.Tb.fits
+/d3/VGPS/MOS_057.Tb.fits
+/d3/VGPS/MOS_057_cont.Tb.fits
+/d3/VGPS/MOS_061.Tb.fits
+/d3/VGPS/MOS_061_cont.Tb.fits
+/d3/VGPS/MOS_065.Tb.fits
+/d3/VGPS/MOS_065_cont.Tb.fits

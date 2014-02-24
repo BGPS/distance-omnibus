@@ -1,0 +1,30 @@
+###========== README ==========###
+
+This README describes the distance-omnibus code.
+
+Distance-omnibus was developed by the Bolocam Galactic Plane Survey team for
+the purpose of resolving distances to BGPS sources.  While developed for the
+BGPS, it had been structured for use with any (sub-)millimeter Galactic plane 
+survey.
+
+The code is based on a series of configuration files, which contain information
+specific to the survey being used as well as the layout of local files and
+other parameters.
+
+Routines are written in the Interactive Data Language (IDL), and are compatible
+with IDL 7.x and 8.x (http://www.exelisvis.com/ProductsServices/IDL.aspx).
+Several external libraries are required for distance-omnibus routines:
+   * IDLASTRO (http://idlastro.gsfc.nasa.gov/)
+   * The Coyote Graphics System (http://www.idlcoyote.com/idldoc/cg/index.html)
+   * The Markwardt IDL Library (http://www.physics.wisc.edu/~craigm/idl/)
+
+
+
+
+
+
+
+
+
+Last Updated: 06/13/13, TPEB
+

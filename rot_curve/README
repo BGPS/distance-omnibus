@@ -1,0 +1,25 @@
+###========== README ==========###
+
+This README is for the rot_curve/ directory of the distance-omnibus code
+repository.  These routines provide a uniform interface for the remainder
+of the code base, so that any rotation curve may be used.
+
+Currently supported rotation curves:
+------------------------------------
+
+Reid et al. (2009, ApJ, 700, 137) flat rotation curve derived from parallax 
+     measurements to H2O and CH3HO masers.  Specific values reflect updated
+     values quoted at the MW2011 conference in Rome.
+
+Clemens (1985, ApJ, 295, 422) rotation curve derived from 12CO observations
+     of the Galactic plane.
+
+IAU Standard rotation curve.
+
+
+
+------------------------------------
+Other rotation curves may be added to the code base by writing a new routine
+     ?????_rotcurve.pro, based on the model provided in clemens_rotcurve.pro.
+     Additionally, code must be added to omni_vphys2vlsr.pro to specify the
+     radius and circular velocity of the Solar Circle, and V(R).

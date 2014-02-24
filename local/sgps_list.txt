@@ -1,0 +1,35 @@
+# The distance-omnibus code base uses the SGPS continuum-subtracted 
+#    HI data cubes and _HACKED_ two-dimensional 21-cm continuum images 
+#    (see IDL routine hack_sgps_continuum_maps.pro).
+# 
+# SGPS data files may be accessed via:
+#      	  http://www.atnf.csiro.au/research/HI/sgps/SGPS_1/
+# 
+# This list tells the distance-omnibus code where to find the required files
+#-----------------------------------------------------------------------------
+/d3/SGPS/g010.hi.fits
+/d3/SGPS/g015.hi.fits
+/d3/SGPS/g258.hi.fits
+/d3/SGPS/g268.hi.fits
+/d3/SGPS/g278.hi.fits
+/d3/SGPS/g288.hi.fits
+/d3/SGPS/g298.hi.fits
+/d3/SGPS/g308.hi.fits
+/d3/SGPS/g318.hi.fits
+/d3/SGPS/g328.hi.fits
+/d3/SGPS/g338.hi.fits
+/d3/SGPS/g348.hi.fits
+/d3/SGPS/g353.hi.fits
+/d3/SGPS/cont_g010.hi.fits
+/d3/SGPS/cont_g015.hi.fits
+/d3/SGPS/cont_g258.hi.fits
+/d3/SGPS/cont_g268.hi.fits
+/d3/SGPS/cont_g278.hi.fits
+/d3/SGPS/cont_g288.hi.fits
+/d3/SGPS/cont_g298.hi.fits
+/d3/SGPS/cont_g308.hi.fits
+/d3/SGPS/cont_g318.hi.fits
+/d3/SGPS/cont_g328.hi.fits
+/d3/SGPS/cont_g338.hi.fits
+/d3/SGPS/cont_g348.hi.fits
+/d3/SGPS/cont_g353.hi.fits
