@@ -12,7 +12,8 @@ specific to the survey being used as well as the layout of local files and
 other parameters.
 
 Routines are written in the Interactive Data Language (IDL), and are compatible
-with IDL 7.x and 8.x (http://www.exelisvis.com/ProductsServices/IDL.aspx).
+with IDL 8.x (http://www.exelisvis.com/ProductsServices/IDL.aspx).
+
 Several external libraries are required for distance-omnibus routines:
    * IDLASTRO (http://idlastro.gsfc.nasa.gov/)
    * The Coyote Graphics System (http://www.idlcoyote.com/idldoc/cg/index.html)
@@ -26,5 +27,5 @@ Several external libraries are required for distance-omnibus routines:
 
 
 
-Last Updated: 06/13/13, TPEB
+Last Updated: 02/27/14, TPEB
 
