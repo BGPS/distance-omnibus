@@ -11,15 +11,13 @@
 ;       distance-omnibus Utility
 ;
 ; CALLING SEQUENCE:
-;       vals = OMNI_COMPUTE_EBARS( PDF, XVALS [,NLVS=nlvs] [,PVAL=pval] )
+;       vals = OMNI_COMPUTE_EBARS( PDF, XVALS [,PVAL=pval] )
 ;
 ; INPUTS:
 ;       PDF   -- The probability density function to be analyzed.
 ;       XVALS -- The abscissa for PDF.
 ;
 ; OPTIONAL INPUTS:
-;       NLVS -- The number of levels to be used in the brute-force
-;               computation of the error bars.  [Default: 1001]
 ;       PVAL -- The isoprobability level associated with the error
 ;               bars.  [Default: 0.6827d]
 ;
@@ -42,10 +40,16 @@
 ;                                   extracted from
 ;                                   distance_omnibus.pro.
 ;       Modified: 02/19/14, TPEB -- Updated documentation.
+;       Modified: 02/26/14, TPEB -- Make go zoom-zoom by changing loop
+;                                   from a FOR to a WHILE, and going
+;                                   from top to bottom, breaking when
+;                                   we hit PVAL.  Also, use the values
+;                                   of PDF instead of arbitrary
+;                                   levels.
 ;
 ;-
 
-FUNCTION OMNI_COMPUTE_EBARS, pdf, xvals, NLVS=nlvs, PVAL=pval
+FUNCTION OMNI_COMPUTE_EBARS, pdf, xvals, PVAL=pval
   
   COMPILE_OPT IDL2, LOGICAL_PREDICATE
   
@@ -61,8 +65,7 @@ FUNCTION OMNI_COMPUTE_EBARS, pdf, xvals, NLVS=nlvs, PVAL=pval
   ENDIF
   
   ;; Parse Keywords
-  nlvs = ~n_elements(nlvs) ? 1001    : long(nlvs) 
-  pval = ~n_elements(pval) ? 0.6827d : double(pval)
+  pval = ~n_elements(pval) ? 0.682689492137d : double(pval) ; Precise enough?
   
   ;;******************************************************************
   ;; Compute maximum-likelihood value
@@ -71,23 +74,24 @@ FUNCTION OMNI_COMPUTE_EBARS, pdf, xvals, NLVS=nlvs, PVAL=pval
   
   ;; Use brute-force method to compute the error bars 
   ;;   NOTE: Using TNMIN is unreliable for this purpose.
-  lvs = findgen(nlvs)/float(nlvs-1)*max(pdf) 
-  ret = fltarr(nlvs)            ; Set area return value to zero
-  totprob = TOTAL(pdf)          ; For faster computing
-  FOR pp=0,nlvs-1 DO BEGIN
-     lind = where( pdf GE (lvs[pp])[0], nlind)
+  ;;   ** Use the values of PDF instead of arbitrary levels! **
+  lvs = reverse( pdf[sort(pdf)] ) ; Max --> Min
+  totprob = TOTAL(pdf)            ; For faster computing
+  ret = 0.d                       ; Start with zero area
+  pp = -1L                        ; Init for WHILE loop
+  WHILE ret LT pval DO BEGIN      ; Stop when the retrun fraction >= PVAL
+     lind = where( pdf GE (lvs[++pp])[0], nlind)
      area = (nlind EQ 0) ? 0.d : TOTAL(pdf[min(lind):max(lind)])
-     ret[pp] = area / totprob   ; Enclosed fraction of the integral
-  ENDFOR
-  lind = where(ret GE pval, nlevel) ; Find areas >= specified PVAL
-  level = nlevel EQ 0 ? max(pdf) : max(lvs[lind]) ; Highest level encl. >= PVAL
+     ret = area / totprob       ; Enclosed fraction of the integral
+  ENDWHILE
+  level = lvs[pp]               ; Highest level encl. >= PVAL
   
   ;; Error indices
   ei = WHERE(pdf GE level, nei) ; Find the edges of the region encl. by LEVEL
   IF nei EQ 0 THEN print,m4_stat(pdf)
   
-  vals[1] = xvals[maxi]    - min(xvals[ei]) ; Lower error bar
-  vals[2] = max(xvals[ei]) - xvals[maxi]    ; Upper error bar
+  ;; [Lower:Upper] error bars
+  vals[1:2] = abs( xvals[maxi] - [min(xvals[ei]),max(xvals[ei])] )
   
   RETURN, vals
 END

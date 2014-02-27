@@ -515,8 +515,7 @@ PRO DISTANCE_OMNIBUS, CONFFILE=cfile,CNUM_LIST=cnum_list, VERBOSE=verbose, $
      pvec[j].stat.dtan = dtan
      
      ;; Compute D_ML and associated error bars
-     pvec[j].stat.dml = OMNI_COMPUTE_EBARS( pvec[j].post, d, $
-                                            NLVS=1001, PVAL=0.6827d )
+     pvec[j].stat.dml = OMNI_COMPUTE_EBARS( pvec[j].post, d )
      
      ;; Compute FW68
      pvec[j].stat.fw68 = pvec[j].stat.dml[1] + pvec[j].stat.dml[2]
