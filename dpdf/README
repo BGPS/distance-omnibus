@@ -12,16 +12,23 @@ order in which the DPDFs are run.
 
 Currently extant DPDF routines are:
 ------------------------------------
-prob_emaf.pro        -- EMAF morphological matching of Ellsworth-Bowers (2013)
-prob_grsmatch.pro    -- Extracts a spectrum from 13CO GRS cubes -- KDIST
-prob_h2.pro          -- Molecular hydrogen (H2) distribution
-prob_hisa.pro**      -- HI Self-Absorption
-prob_irdc.pro**      -- Old IRDC routine
-prob_kdist.pro       -- Kinematic distance DPDF
-prob_maser.pro**     -- Association with masers
+prob_emaf.pro        -- EMAF morphological matching (1)
+prob_grsmatch.pro    -- Extracts kinematic distance from GRS 13CO data (2)
+prob_h2.pro          -- Molecular hydrogen (H2) distribution (1)
+prob_kdist.pro       -- Kinematic distance DPDF (1)
+prob_hrds.pro        -- Apply KDA resolution of HRDS HII regions (2)
+prob_parallax.pro    -- Apply trigonometric parallax distance (2)
+prob_knownd.pro      -- Manually assign distances to known regions (2)
 
-** Not currently supported, and will kick a warning in distance_omnibus.pro
+References: (1) Ellsworth-Bowers et al. (2013, ApJ, 770, 39)
+	    (2) Ellsworth-Bowers et al. (2014, ApJ, 7vv, ppp)
 ------------------------------------
 
-As other methods are developed, the new routines will be placed in this
-directory, and entires in dpdf_params.conf will be added.
+With the development of additional DPDF methods, the assocated prob_*.pro
+routines will be placed in this directory, and corresponding entries in
+conffiles/dpdf_params.conf will be added.
+
+
+
+
+Last Updated: 02/27/14, TPEB
