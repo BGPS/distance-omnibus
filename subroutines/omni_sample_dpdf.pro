@@ -3,21 +3,28 @@
 ;       OMNI_SAMPLE_DPDF
 ;
 ; PURPOSE:
-;       Returns a distance randomly sampled from an input DPDF.
+;       Returns a distance randomly sampled from an input DPDF.  Or,
+;       more generally, returns an XVAL randomly sampled from an input
+;       PDF.
 ;
 ; CATEGORY:
-;       distance-omnibus Mass Utility
+;       distance-omnibus Utility
 ;
 ; CALLING SEQUENCE:
-;       d = OMNI_SAMPLE_DPDF(dpdf, dvec, n)
+;       d = OMNI_SAMPLE_DPDF(pdf, xval, n)
 ;
 ; INPUTS:
-;       DPDF -- Input distance probability density function
-;       DVEC -- Vector of distances associated with the elements of
-;               DPDF.
+;       PDF  -- Input probability density function (usually a DPDF).
+;       XVAL -- Vector of x-values associated with the elements of
+;               PDF.
 ;
 ; OPTIONAL INPUTS:
-;       N -- Number of random distances to return.  [Default: 1]
+;       N    -- Number of random XVALs to return.  [Default: 1]
+;       KDAR -- For DPDFs, may specify a KDA resolution, and the DPDF
+;               will have a step function applied, with cutoff at
+;               DTAN, before random XVALs are computed.
+;       DTAN -- Required for use with KDAR, the tangent distance at
+;               which the step function is applied.
 ;
 ; KEYWORD PARAMETERS:
 ;       NONE
@@ -41,6 +48,10 @@
 ;                                   COMPILE_OPT statements.
 ;       Modified: 04/17/13, TPEB -- Added /NAN checks in TOTAL() calls
 ;                                   to deal with any problems.
+;       Modified: 02/27/14, TPEB -- Some code simplification, plus
+;                                   documentation update to specify
+;                                   that this routine may be used more
+;                                   generally than just DPDFs.
 ;
 ;-
 
@@ -59,24 +70,26 @@ FUNCTION OMNI_SAMPLE_DPDF, dpdf, dvec, n, kdar, dtan
      RETURN,0b
   ENDIF
   
-  ;; Set default n
-  IF ~n_elements(n) THEN n = 1
-  
   ;; Get the uniform random numbers
-  rand = randomu(seed,n,/UNIFORM)
+  rand = randomu(seed, n_elements(n) ? n : 1, /UNIFORM)
   
   ;; Apply step function if KDAR is supplied
   IF KEYWORD_SET(kdar) THEN BEGIN
-     CASE kdar OF
-        'N' : dpdf *= (dvec LE dtan)
-        'F' : dpdf *= (dvec GE dtan)
-        'T' : dpdf *= 1.d
-        'U' : dpdf *= 1.d
-        ELSE: BEGIN
-           message,"Man, that's an f-ed up KDAR!",/cont
-           RETURN,0
-        END
-     ENDCASE
+     IF n_elements(dtan) THEN BEGIN
+        CASE kdar OF
+           'N' : dpdf *= double(dvec LE dtan) ; Step function at d <= dtan
+           'F' : dpdf *= double(dvec GE dtan) ; Step function at d >= dtan
+           'T' :                              ; Tangent -- leave alone
+           'O' :                              ; Outer Galaxy -- leave alone
+           'U' :                              ; Unconstrained -- leave alone
+           ELSE: BEGIN
+              message,"Are you drunk or something?  That KDAR is FUBAR.",/cont
+              RETURN,0
+           END
+        ENDCASE
+     ENDIF ELSE $               ; End of dtan IF statement
+        message,'Use of KDAR requested, but DTAN not supplied... '+$
+                'Continuing without applying KDAR.',/cont
   ENDIF
   
   ;; Compute the CDF, double-checking that the DPDF is normalized to
