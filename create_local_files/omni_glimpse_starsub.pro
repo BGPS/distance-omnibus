@@ -7,6 +7,14 @@
 ;       stars found in the corresponding Band 1 image.  Allows for
 ;       clearer estimation of the diffuse 8-um Galactic emission.
 ;
+;       WARNING: Running this procedure is extremely CPU-intensive,
+;       possibly requiring days to complete.  See the NOTES section
+;       below for a manual parallization scheme for a many-CPU machine
+;       to speed processing.
+;
+;       NOTE: Once the star-subtracted GLIMPSE images have been
+;       computed and stored, this routine need not be run ever again.
+;
 ; CATEGORY:
 ;       distance-omnibus Local File Creation (EMAF-specific)
 ;
@@ -14,7 +22,8 @@
 ;       OMNI_GLIMPSE_STARSUB
 ;
 ; INPUTS:
-;       NONE (all inputs hardwired)
+;       NONE (all inputs hardwired or available in the configuration
+;             file)
 ;
 ; OPTIONAL INPUTS:
 ;       NONE

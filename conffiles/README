@@ -6,26 +6,30 @@ repository.  Configuration files are used to tell the code:
      survey being used with the code;
   2. Galactic parameters to be used, such as R0, rotation curve, etc.
   3. Which prior DPDFs to run, and in what order.
-  4. Other info...
+  4. Potentially any other information needed for a given purpose.
 
 
 
 Files in this directory under version control:
 ----------------------------------------------
 
-README files associated with each of the config file types listed below
+### Survey-specific Configuration Files ###
+survey_info.conf       -- Symlink to or file containing survey information
+survey_info_bgps2.conf -- Bolocam Galactic Plane Survey V2.0 
+survey_info.blank      -- Config file with all entries blank
 
-survey_info.conf       -- Symlink to or file containing survey information.
-survey_info_bgps1.conf -- Bolocam GPS V1.0 
-survey_info_bgps2.conf -- Bolocam GPS V2.0 
-survey_info.template   -- Template for survey_info.conf
+### General Configuration Files ###
+galactic_params.conf   -- Galactic parameters, including R0, rotcurve, etc.
+dpdf_params.conf       -- DPDF computation parameters: inclusion, order, etc.
+ancillary.conf         -- Information related to ancillary data sets.
 
-galactic_params.conf     -- Galactic parameters, including R0, rotcurve, etc.
-galactic_params.template -- Template for galactic_params.conf
+### Local Machine Configuration Files ###
+local_layout.conf      -- Locations of files on the local machine
 
-dpdf_params.conf     -- DPDF computation parameters: inclusion, order, etc.
-dpdf_params.template -- Template for dpdf_params.conf
-
+### README Files ###
+README files associated with each of the config file types listed above are
+also present in this directory.  Consult individual README files for specifics
+on the contents of the configuration files.
 
 
 ------
@@ -33,3 +37,4 @@ dpdf_params.template -- Template for dpdf_params.conf
 Changelog:
    Created:  02/14/13, TPEB -- Initial version.
    Modified: 02/21/13, TPEB -- Added mention of additional README files
+   Modified: 02/27/14, TPEB -- Clean up of documentation.
