@@ -103,6 +103,9 @@
 ;                                   indistinguishable ONSPEC].
 ;       Modified: 12/23/13, TPEB -- Conformal changes to allow /NOFILT
 ;                                   option for GRS SAVGOL filtering.
+;       Modified: 03/11/14, TPEB -- Add flag kick for NON-FINITE
+;                                   linewidths (see above) for
+;                                   downstream analysis.
 ;
 ;-
 
@@ -238,27 +241,28 @@ PRO OMNI_IMPORT_VELOCITY, CONFFILE=cfile, VERBOSE=verbose, NOGRSFILT=nogrsfilt
   
   ;;===========================================================
   ;; Create the velocity structure that will be saved to disk
-  v = replicate( {cnum:0,$
-                  l:0.d,$
-                  b:0.d,$
-                  mol:$
-                  replicate({name:'',$
-                             vlsr:0.d,$
-                             lw:0.d,$
-                             tmb:0.d,$
-                             sigt:0.d,$
-                             nspec:0,$
-                             multiv:0b},nvel),$
-                  grs: {vlsr:0.d,$
-                        tpk:0.d,$
-                        lw:0.d,$
-                        tonspec:0.d,$
-                        flag:0b},$
-                  vlsr:-1000.d,$ ; This value will identify non-detections
-                  lw:0.d,$
-                  snr:0.d,$
-                  multiv:0b,$
-                  rv_types:0}, ncat)
+  v = replicate( {cnum:0,$      ; SURVEY catalog number
+                  l:0.d,$       ; Galactic Longitude
+                  b:0.d,$       ; Galactic Latitude
+                  mol:$         ; Sturcture containing individual molecules
+                  replicate({name:'',$  ; Molecule / Transition Name
+                             vlsr:0.d,$ ; This Molecule VLSR
+                             lw:0.d,$   ; This Molecule linewidth
+                             tmb:0.d,$  ; This Molecule T_mb
+                             sigt:0.d,$ ; This Molecule T rms
+                             nspec:0,$  ; # of spectra in This Molecule
+                             multiv:0b},nvel),$ ; Replicate for # of molecules
+                  grs: {vlsr:0.d,$              ; GRS Structure / VLSR
+                        tpk:0.d,$               ; GRS On-Off T_pk
+                        lw:0.d,$                ; GRS linewidth
+                        tonspec:0.d,$           ; GRS On T_pk
+                        flag:0b},$              ; GRS flag
+                  vlsr:-1000.d,$     ; This value will identify non-detections
+                  lw:0.d,$           ; Dense Gas Linewidth
+                  snr:0.d,$          ; Dense Gas S/N ratio
+                  multiv:0b,$        ; Multiple velocity components, reject
+                  inflw:0b,$         ; Infinite linewidth flag
+                  rv_types:0}, ncat) ; RV Types bitwise flag
   
   ;; Copy over structure elements
   v.cnum     = s.cnum
@@ -514,8 +518,11 @@ PRO OMNI_IMPORT_VELOCITY, CONFFILE=cfile, VERBOSE=verbose, NOGRSFILT=nogrsfilt
         v[ci].rv_types += 2^(vi) ; Add RV type flag
         
         ;; Check for finite linewidth... if not then set to something
-        ;;   reasonable (say, 3 km/s).
-        IF ~finite(v[ci].mol[vi].lw) THEN v[ci].mol[vi].lw = 3.d
+        ;;   reasonable (say, 3 km/s).  Also kick flag!
+        IF ~finite(v[ci].mol[vi].lw) THEN BEGIN
+           v[ci].mol[vi].lw = 3.d
+           v[ci].inflw = 1b
+        ENDIF
         ;; Check for reasonable linewidth... set upper bound = 10 km/s
         ;;   -- value from histogram of LW
         v[ci].mol[vi].lw = v[ci].mol[vi].lw < 10.
