@@ -102,6 +102,8 @@
 ;       Modified: 02/06/14, TPEB -- Split out auxillary routines into
 ;                                   separate files, leaving only the
 ;                                   main routine in this file.
+;       Modified: 03/11/14, TPEB -- Remove MASS type for release on
+;                                   GITHUB.
 ;
 ;-
 
@@ -260,22 +262,6 @@ FUNCTION OMNI_READ_CONFFILE, conffile
         ENDIF
         
      END                        ; End of ancillary CASE statement
-     
-     
-     ;;=============================================
-     ;; Parse MASS-DERIV file and create structure
-     'mass-deriv':BEGIN
-        
-        ;; Send to subroutine for actual parsing
-        conf = omni_read_conffile_mass(lun,conffile,lnum)
-        
-        ;; ;; Check that the keyword 'survey' is properly set, else return error
-        ;; IF conf.postage EQ '' || strtrim(conf.postage,2) EQ '1' THEN BEGIN
-        ;;    message,'Error: POSTAGE keyword not set in '+conffile,/cont
-        ;;    RETURN,{error:'Postage keyword not set in local_layout type file'}
-        ;; ENDIF
-        
-     END                        ; End of mass-deriv CASE statement
      
      
      ;;=============================================
