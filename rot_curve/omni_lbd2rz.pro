@@ -86,6 +86,12 @@
 ;                                   framework.
 ;       Modified: 09/05/13, TPEB -- Added XGAL and YGAL coordinate
 ;                                   optional outputs.
+;       Modified: 03/11/14, TPEB -- Corrected the XGAL & YGAL outputs
+;                                   (they had been swapped).  Changed
+;                                   THETA calculation to arctan from
+;                                   arccos to correctly assign
+;                                   sign to Q3 & Q4 objects.  Also,
+;                                   get fancy with IDL system variables.
 ;
 ;-
 
@@ -103,34 +109,34 @@ PRO OMNI_LBD2RZ, l, b, d, R, Z, R0=R0, DPROJ=dproj, THETA=theta, $
   IF n_elements(R0) EQ 0 THEN  R0 = mw.r0
   
   ;; Simplify variables -- and compute angle TH of sun above midplane
-  l2 = double(l)*(!dpi/180.d)   ; (Un-)Corrected GLON (rad)
-  b2 = double(b)*(!dpi/180.d)   ; (Un-)Corrected GLAT (rad)
+  l2 = double(l)*!const.dtor    ; (Un-)Corrected GLON (rad)
+  b2 = double(b)*!const.dtor    ; (Un-)Corrected GLAT (rad)
   th = asin(double(mw.z0) / R0) ; Angle of LOS to GC above midplane (rad)
   
   ;; Check on the type of d -- make double version of real or complex
   IF size(d,/type) LE 5 THEN d = double(d) ELSE d = dcomplex(d)
   
   ;; Simplify inputs
-  x1 = -d * cos(b2) * cos(l2)
-  y1 = -d * cos(b2) * sin(l2)
-  z1 =  d * sin(b2)
+  x1 = d * cos(b2) * cos(l2)
+  y1 = d * cos(b2) * sin(l2)
+  z1 = d * sin(b2)
   
   ;; Calculate R & Z
-  R = sqrt( y1*y1 + ((R0+x1)*cos(th) - z1*sin(th))^2)
-  Z = z1*cos(th) + (R0+x1)*sin(th)
+  R = sqrt( y1*y1 + ((R0-x1)*cos(th) - z1*sin(th))^2)
+  Z = z1*cos(th) + (R0-x1)*sin(th)
   
   ;;==========================================================
   ;; Optional outputs
   
   ;; Heliocentric distance projected into the Galactic Plane
-  dproj = sqrt( y1*y1 + (x1*cos(th) - z1*sin(th))^2 )
+  dproj = sqrt( y1*y1 + (R0 - (R0-x1)*cos(th) + z1*sin(th))^2 )
   
   ;; Angle between GC line and R vector to object
-  theta = acos((R0*cos(th)-dproj*cos(l2))/R)
+  theta = atan( y1, (R0-x1)*cos(th) - z1*sin(th) )
   
   ;; Galactocentric X & Y
-  xgal = -R * cos(theta)
-  ygal = -R * sin(theta)
+  xgal = -R * sin(theta)        ; Correctly unswapped these
+  ygal = -R * cos(theta)        ; 03/11/14, TPEB
   
   RETURN
 END
