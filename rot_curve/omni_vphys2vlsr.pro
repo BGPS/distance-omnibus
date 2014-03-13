@@ -88,6 +88,15 @@
 ;       Modified: 09/17/13, TPEB -- Fixed the QIII & QIV thing
 ;                                   (again).
 ;       Modified: 11/14/13, TPEB -- Documentation update.
+;       Modified: 03/12/14, TPEB -- Really, finally fixed the QIII &
+;                                   QIV thingie, because there was an
+;                                   issue in OMNI_LBD2RZ where the
+;                                   THETA reported was (signed)
+;                                   incorrect for QIII & QIV.  The fix
+;                                   there and here simplifies the
+;                                   matter without the need for
+;                                   hijinks or tomfoolery.  Also, get
+;                                   fancy with IDL system variables.
 ;
 ;-
 
@@ -146,25 +155,22 @@ FUNCTION OMNI_VPHYS2VLSR, l, b, d, VS=vs, VOBS=vobs
   ENDCASE
   
   ;; Angle between LOS and Velocity Vector
-  ;; Need ABS(l) (in case of -l values used rather than 360-l values),
-  ;; and the addition of pi comes to correct Quadrants III and IV to
-  ;; have an ONCOMING velocity, rather than recessional.
-  usel = l GT 180. ? l - 360. : l ; Make work for QIII & QIV (09/17/13)
-  phi = !dpi/2-abs(usel)*!dtor-theta + !dpi*(l LT 0 OR l GT 180)
+  phi = !dpi/2.d - l*!const.dtor - theta
   
   ;; This is VLSR for correct LSR
-  vobs = (vR-vs)*cos(b*!dtor)*cos(phi) - v0*sin(l*!dtor)
+  vobs = (vR-vs)*cos(b*!const.dtor)*cos(phi) - v0*sin(l*!const.dtor)
   ;; The IAU curve assumes that observed LSR is the 'correct' LSR
   IF mw.curve EQ 'IAU' THEN RETURN,vobs
   
   ;; Heliocentric velocity, using Solar Pecular Motion from
   ;;   galactic-params confiuration file
-  vhelio = vobs - (mw.bigu*cos(l*!dtor)+mw.bigv*sin(l*!dtor)) * cos(b*!dtor) - $
-           mw.bigw*sin(b*!dtor)
+  vhelio = vobs - (mw.bigu*cos(l*!const.dtor)+mw.bigv*sin(l*!const.dtor)) * $
+           cos(b*!const.dtor) - mw.bigw*sin(b*!const.dtor)
   
   ;; For Clemens (1985) curve, they also found a +7(1.5) km/s motion
   ;; of the LSR in the BIGV direction.  So, add this to vobs:
-  IF mw.curve EQ 'CLEM' THEN RETURN,vobs+(7.d * sin(l*!dtor) * cos(b*!dtor))
+  IF mw.curve EQ 'CLEM' THEN RETURN,vobs+(7.d * sin(l*!const.dtor) * $
+                                          cos(b*!const.dtor))
   
   ;; OLD (i.e. STANDARD) DEFINITION OF V_PEC:
   ;;
