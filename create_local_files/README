@@ -1,12 +1,15 @@
-Last Updated: 2011-Jul-14
+Last Updated: 2014-Mar-13
 
 The create_local_files/ directory contains the routines necessary to generate
-many of the large files (or collections of files) in the local/ directory.  It
-seemed more streamlined to move these functions to their own directory so that
-the local/ directory may be less populated with files under version control.
+many of the large files (or collections of files) used by the code base and
+found in the local/ directory.  These are routines used for create intermediate
+data products, and not the more general subroutine-type files found in the
+subroutines/ directory.
 
-Contents of the create_local_files/ directory:
+Directory contents:
 
+
+######## NEEDS MUCH UPDATING!!! ########
    FOUNDATIONAL ROUTINES (CREATE OFT-USED IDL SAVE FILES):
 assoc_bgps_bolocat.pro -- Associates the Bolocat objects with the BGPS released 
 		       	  maps and creates the IDL save file 
