@@ -46,6 +46,7 @@
 ;                                   images, returns [-1,0] as range.
 ;       Modified: 04/10/13, TPEB -- Added COMPILE_OPT statement, and
 ;                                   minor code clean-up.
+;       Modified: 03/24/14, TPEB -- Clean up ugly code.
 ;-
 
 FUNCTION SET_PLOT_RANGE, image, LEVEL=level, INVERT=invert
@@ -63,17 +64,17 @@ FUNCTION SET_PLOT_RANGE, image, LEVEL=level, INVERT=invert
   ENDIF
   
   ;; Check finiteness -- don't want to include NaN in output range
-  fin_ind = WHERE( FINITE( image ), n_fin )
-  IF ~n_fin THEN BEGIN
+  ifin = where(finite(image),nfin)
+  IF ~nfin THEN BEGIN
      message,'No finite elements in image, returning range=[0,1]',/cont
      RETURN,[0,1]
   ENDIF
   
   ;; Find lower and upper sorted indices that correspond to the threshold
-  lohi = long(round( [thresh*n_fin , (1.d - thresh)*n_fin - 1.] ))
+  lohi = long(round([thresh*nfin, (1.d - thresh)*nfin - 1.d]))
   
   ;; Get range in one terse line.
-  range = ( (image[fin_ind])[sort( image[fin_ind] )] )[lohi]
+  range = ((image[ifin])[sort(image[ifin])])[lohi]
   
   IF range[0] EQ range[1] THEN BEGIN
      message,'No dynamic range in image, returning range=[-1,0]',/inf
@@ -81,6 +82,6 @@ FUNCTION SET_PLOT_RANGE, image, LEVEL=level, INVERT=invert
   ENDIF
   
   junk = check_math()
-  IF KEYWORD_SET(invert) THEN RETURN,[range[1],range[0]] ELSE RETURN,range
+  IF KEYWORD_SET(invert) THEN RETURN,reverse(range) ELSE RETURN,range
   
 END
