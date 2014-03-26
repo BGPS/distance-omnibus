@@ -344,7 +344,7 @@ FUNCTION OMNI_EMAF_MORPH, s, dvec, MAKE_PS=make_ps, VERBOSE=verbose, $
      legcolor1 = 'WT3'
      legcolor2 = 'Black'
      
-     multiplot_xm,[2,2],/xmargin,ygap=0.02,xgap=0.042,mpcharsize=charsize*0.7
+     multiplot,[2,2],ygap=0.02,xgap=0.042
      
      cgText,/norm,align=0.5,0.5,0.97,'MAP #'+string(s.cnum,format=fmt),$
             charsize=charsize*1.2

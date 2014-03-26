@@ -186,7 +186,7 @@ PRO OMNI_MIR_EXAMINE, fn, CONFFILE=cfile, TXTONLY=txtonly
      ;; Prep plotting
      myps,'./local/output/'+conf.survey+'_mirexam'+cnum+'.eps',xsize=6.5,$
           ysize=5.65,/cmyk
-     multiplot_xm, [2,2], ygap=0.02,xgap=0.042,/xmargin,mpcharsize=plotcs*0.7
+     multiplot, [2,2], ygap=0.02,xgap=0.042
      
      cgText,/norm,align=0.5,0.5,0.97,conf.survey+' #'+cnum,charsize=plotcs*1.2
      
