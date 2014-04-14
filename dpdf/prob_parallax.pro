@@ -55,6 +55,9 @@
 ;                                   association (bug fix), and correct
 ;                                   the BESSEL structure element for
 ;                                   parallax error.
+;       Modified: 04/11/14, TPEB -- Adjusted the normalized 3D
+;                                   distance to v^4 to account for the
+;                                   turbulent structure function.
 ;
 ;-
 
@@ -115,8 +118,9 @@ FUNCTION PROB_PARALLAX, s, DVEC = dvec, CONSTRAIN = constrain
   dv  = dv[ind]                 ; Velocity separation [km/s]
   adb = adist[ind]              ; Angular association radius [deg]
   
-  ;; Compute the normalized 3D distance...  sqrt(ang^2 + vel^2)
-  n3d = sqrt((dis*dis/adb/adb/3600./3600.) + (dv*dv/ancil.ppv_dv/ancil.ppv_dv))
+  ;; Compute the normalized 3D distance...  sqrt(ang^2 + vel^4)
+  n3d = sqrt((dis*dis/adb/adb/3600./3600.) + $
+             (dv*dv*dv*dv/ancil.ppv_dv/ancil.ppv_dv/ancil.ppv_dv/ancil.ppv_dv))
   
   ;;===========================================
   ;; Build the DPDF

@@ -168,6 +168,8 @@
 ;       Modified: 02/13/14, TPEB -- Name change OMNI_NOTTRUST_KDIST
 ;                                   --> OMNI_KINEMATIC_AVOIDANCE.
 ;                                   Also, now check for KAZ GRS VLSR.
+;       Modified: 04/11/14, TPEB -- Tweak 'tangent' designation to
+;                                   account for miscreant sources.
 ;
 ;-
 
@@ -528,9 +530,10 @@ PRO DISTANCE_OMNIBUS, CONFFILE=cfile,CNUM_LIST=cnum_list, VERBOSE=verbose, $
         find = where(d GT dtan, nfar)
         ;; Compute P_ML
         pvec[j].stat.pml = total(pvec[j].post[nind]) > total(pvec[j].post[find])
-        ;; Make N/F/T determination -- Tangent if <= 1 kpc of dtan
+        ;; Make N/F/T determination -- Tangent if <~ 1 kpc of dtan
         pvec[j].stat.kdar = pvec[j].stat.dml[0] LE dtan ? 'N' : 'F'
-        IF abs(pvec[j].stat.dml[0] - dtan) LE 1.d3 THEN pvec[j].stat.kdar = 'T'
+        IF abs(pvec[j].stat.dml[0] - dtan) LE 1.05d3 THEN $
+           pvec[j].stat.kdar = 'T'
         
      ENDIF ELSE BEGIN
         ;; OUTER GALAXY sources, P_ML = 1., KDAR = 'O'
@@ -578,10 +581,10 @@ PRO DISTANCE_OMNIBUS, CONFFILE=cfile,CNUM_LIST=cnum_list, VERBOSE=verbose, $
            constrain_arg = constrain_arg || constrain[j].parallax
         
         ;; Set CONSTRAIN[j].POST=1b IF above criteria are met, AND the
-        ;;   FW68 is less than 2.3 kpc *OR* D_ML is w/in 1 kpc of DTAN
+        ;;   FW68 is less than 2.3 kpc *OR* D_ML is w/in ~1 kpc of DTAN
         IF constrain_arg && $
            (pvec[j].stat.fw68 LE 2.3d3 || $
-            abs(pvec[j].stat.dml[0] - pvec[j].stat.dtan) LE 1.d3) THEN $
+            abs(pvec[j].stat.dml[0] - pvec[j].stat.dtan) LE 1.05d3) THEN $
                constrain[j].post = 1b ELSE $
                   pvec[j].stat.kdar = 'U' ; If CONSTRAIN[j].post = 0
         
