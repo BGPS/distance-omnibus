@@ -12,8 +12,8 @@ Byte-by-byte Description of file: apj403504t6_mrt.txt
        8 A1     ---     HISA   HISA flag (1)  
       10 A1     ---     KDA    KDA flag (2)  
   12- 15 F4.1   kpc     Dis    Kinematic distance  
-  17- 21 F5.2   kpc   E_Dis    Upper uncertainty limit in Dis  
-  23- 27 F5.2   kpc   e_Dis    Lower uncertainty limit in Dis  
+  17- 21 F5.2   kpc   p_Dis    Upper uncertainty limit in Dis  
+  23- 27 F5.2   kpc   m_Dis    Lower uncertainty limit in Dis  
   29- 31 F3.1   kpc     RGal   Galactic radius
 --------------------------------------------------------------------------------
 Note (1):  
