@@ -1,0 +1,63 @@
+Last Updated: 2012-Oct-24
+
+The local/ directory contains files that are too large to be maintained in the
+SVN repository.  Three types of files can be maintained in the local directory:
+inputs to the probability distribution codes, outputs from the the procesisng
+and files that help with setting up the local directory such as this one.
+Only the latter category is under version control.
+
+Contents of the local/ directory:
+
+*** VERSION CONTROL: ***
+
+contents.txt                  -- This file
+base_avg_hht_spec.pro         -- Data reduction script for the Spring 2011 HHT
+			      	 spectra (HCO+ / N2H+).
+bgps_class2fits.class         -- CLASS script used to convert the Spring 2011
+			      	 HHT spectra from CLASS to FITS format (before
+				 being run through base_avg_hht_spec.pro).
+hack_sgps_continuum_maps.pro  -- Creates stand-in 21-com continuum maps for the 
+			      	 SGPS survey coverage, since no official maps 
+				 have been released.
+glimpse_list.txt              -- List of GLIMPSE data files required.
+grs_list.txt                  -- List of GRS data files required.
+cgps_list.txt                 -- List of CGPS data files required.
+vgps_list.txt                 -- List of VGPS data files required.
+sgps_list.txt                 -- List of SGPS data files required.
+bgps_boundaries_v1.txt        -- Text file containing Galactic coordinates of 
+			      	 the corners of the V1 BGPS images (for use 
+				 with process_glimpse_irdc.pro).
+mrt/                          -- Various machine readable tables from relevant
+			      	 papers
+
+*** NO VERSION CONTROL: ***
+
+   DIRECTORIES CONTAINING EXTERNAL DATA SETS:
+bgps/       -- Link to or Directory of BGPS image directories 
+bgps_v2/    -- Link to or Directory of BGPS V2 image directories 
+grs/        -- Link to or Directory containing the GRS data cubes
+glimpse_v3/ -- Link to or Directory containing the GLIMPSE V3.5 images
+cgps/       -- Link to or Directory containing the CGPS data cubes
+vgps/       -- Link to or Directory containing the VGPS data cubes
+sgps/       -- Link to or Directory containing the SGPS data cubes
+
+   DIRECTORIES CONTAINING BGPS PROPRIETARY DATA:
+hht/              -- Link to or Directory containing Wayne's HHT data
+hht_2011/         -- Link to or Directory containing Spring 2011 HHT data
+
+   DIRECTORIES CONTAINING LOCALLY-GENERATED DATA:
+glimpse_postage/ -- Link to or Directory containing processed GLIMPSE images
+output/          -- Link to or Directory containing outputs from the code.
+postage/         -- Link to or Directory containing the BGPS postage-stamps
+hv_slides/       -- Link to or Directory containing Human Verification Slides
+
+
+   IDL SAVE FILES:
+bgps_grs_spectra.sav        -- Extracted GRS spectra (from 
+			       generate_grs_spectra_local.pro).
+bgps_hi_spectra.sav         -- Extracted HI spectra (from 
+			       generate_hi_spectra_local.pro).
+bgps_irdc.sav               -- IRDC association information.
+bgps_pvec.sav               -- Probability vectors.
+bgps_v102_map_locations.sav -- Map locations for the BGPS catalog objects.
+bgps_velocity_struct.sav    -- Dense-gas tracer velocity spectra.

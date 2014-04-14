@@ -1,0 +1,49 @@
+###========== README_survey_info ==========###
+
+This README describes the parts of the survey_info.conf configuration file, 
+where all survey-specific information is placed.  This includes locations of
+map mosaics, source catalog, etc.
+
+CTYPE  -- The type of configuration file.  This is survey-info.
+SURVEY -- Name of the survey.  This string is used to name various derivative
+       	  files used by the distance-omnibus code.
+
+CAT    -- Location of the survey source catalog.  The catalog MUST be in AJ/ApJ
+       	  style Machine Readable Format, with standards and conversion tool at
+	  http://aas.org/authors/machine-readable-table-standards
+	  http://authortools.aas.org/MRT/upload.html
+
+
+######## Information about the map data products for the survey
+
+MAPS   -- Many of the routines in the distance-omnibus code require cutouts
+       	  from the survey map data around individual sources in the catalog.
+	  This keyword is the filename (with path) of the text file containing
+	  the filenames (with path) of the survey data images.
+
+CROP   -- If the full images are provided, but were masked or cropped before
+       	  cataloging took place, the routines need to know the cropping limits
+	  (in Galactic Coordinates) for each image.  This keyword is the
+	  filename of the text file containing this information.  Images must 
+	  be specified in the same order as in MAPS.  This file has 5 columns:
+	  fieldname, l_min, l_max, b_min, b_max
+	  The cropping dimensions are only needed if LABEL maps do not exist.
+
+LABEL  -- Many of the routines in the distance-omnibus code require a source
+       	  outline for each entry in the catalog.  Label maps have the same
+	  dimensions as MAPS, and are zero everywhere except for the locations
+	  of cataloged sources.  Each source in a label map should be filled
+	  with a different value to distinguish between adjacent objects.  It
+	  is most convenient if the label maps are stored as type LONG.  This
+	  keyword is the filename of the text file containing the filenames of
+	  the survey LABEL maps, in the SAME ORDER as MAPS.
+
+SMOOTH -- For visualization purposes, some surveys may produce smoothed
+       	  versions of the map data.  Some routines in the distance-omnibus code
+	  use these smoothed maps to plot flux density contours -- but such
+	  maps are not required.
+
+
+######## Information about the VELOCITY data associated with this survey
+
+

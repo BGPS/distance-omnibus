@@ -1,0 +1,99 @@
+### SURVEY_INFO ###
+
+ctype=survey-info                   # This is a survey information config file
+survey=                             # Configuration for 
+
+### Catalog Information ###
+cat=                                # Location of the survey source catalog
+flux=                               # Column name for total source flux density
+eflux=                              # Column name for error on above
+flux1=                              # Column name for 1st flux density aperture
+eflux1=                             # Column name for error on above
+aper1=                              # [arcsec] Diameter of above aperture
+flux2=                              # Column name for 2nd flux density aperture
+eflux2=                             # Column name for error on above
+aper2=                              # [arcsec] Diameter of above aperture
+flux3=                              # Column name for 3rd flux density aperture
+eflux3=                             # Column name for error on above
+aper3=                              # [arcsec] Diameter of above aperture
+flux4=                              # Column name for 4th flux density aperture
+eflux4=                             # Column name for error on above
+aper4=                              # [arcsec] Diameter of above aperture
+
+### Survey-specific physical values ###
+nu=                                 # [Hz] Central frequency of SURVEY bandpass
+kappa=                              # [cm^2/g] Dust opacity at nu (no gas)
+fwhm=                               # [arcsec] Beam Gaussian FWHM
+omega=                              # [sr] Solid angle of beam
+
+### Information about the map data products for this survey
+ppbeam=                             # Number of pixels per beam
+noisefloor=                         # [Jy] Lower bound on aperture flux errors
+maps=                               # File containing map filenames (w/ path)
+crop=                               # File containing coordinate cropping dims
+label=                              # File containing label filenames
+smooth=                             # File containing smoothed map filenames
+noise=                              # File containing noise map filenames
+complete=                           # Completeness level (99%), times noise
+labvaliscnum= 			    # Label map value EQ catalog number
+
+### Information about the VELOCITY data associated with this survey	
+hasvelocity=                        # Does this survey have velocity info?
+usegrs=                             # Use the GRS for 13CO kinematic info?
+maxdist=                            # [arcsec] Max separate: catalog-v pointing
+
+## First Molecular Line
+v1name=                             # Name of the molecular line (#1)
+v1mrt=                              # Velocity Machine-Readable Table
+v1flag=                             # FLAG Label in V1MRT
+v1vlsr=                             # VLSR Label in V1MRT
+v1lw=                               # Linewidth Label in V1MRT
+v1tmb=                              # Amplitude Label in V1MRT
+v1sigt=                             # Uncertainty in T
+v1coord=                            # Coordinate system used in V1MRT
+
+## Second Molecular Line
+v2name=                             # Name of the molecular line (#2)
+v2mrt=                              # Velocity Machine-Readable Table
+v2flag=                             # FLAG Label in V2MRT
+v2vlsr=                             # VLSR Label in V2MRT
+v2lw=                               # Linewidth Label in V2MRT
+v2tmb=                              # Amplitude Label in V2MRT
+v2sigt=                             # Uncertainty in T
+v2coord=                            # Coordinate system used in V2MRT
+
+## Third Molecular Line
+v3name=                             # Name of the molecular line (#3)
+v3mrt=                              # Velocity Machine-Readable Table
+v3vlsr=                             # VLSR Label in V3MRT
+v3lw=                               # Linewidth Label in V3MRT
+v3tmb=                              # Amplitude Label in V3MRT
+v3sigt=                             # Uncertainty in T
+v3coord=                            # Coordinate system used in V3MRT
+
+## Fourth Molecular Line
+v4name=                             # Name of the molecular line (#4)
+v4mrt=                              # Velocity Machine-Readable Table
+v4vlsr=                             # VLSR Label in V4MRT
+v4lw=                               # Linewidth Label in V4MRT
+v4tmb=                              # Amplitude Label in V4MRT
+v4sigt=                             # Uncertainty in T
+v4coord=                            # Coordinate system used in V4MRT
+
+## Fifth Molecular Line
+v5name=                             # Name of the molecular line (#5)
+v5mrt=                              # Velocity Machine-Readable Table
+v5vlsr=                             # VLSR Label in V5MRT
+v5lw=                               # Linewidth Label in V5MRT
+v5tmb=                              # Amplitude Label in V5MRT
+v5sigt=                             # Uncertainty in T
+v5coord=                            # Coordinate system used in V5MRT
+
+## Additional Molecular Lines go here...
+				    
+### Information for combining velocity info from multiple surveys
+nvbin=                              # Number of velocity bins
+deltav=                             # [km/s] Bin size
+startv=                             # Starting value
+
+### Other...

@@ -1,0 +1,30 @@
+The IDL save file irdc_full_data.sav contains the Peretto & Fuller (2009)
+catalog of IRDCs, modified for use with the distance-omnibus project.
+
+The catalog is contained in an array of structures called PF_IRDC
+
+Each element in the array is a structure for a single IRDC with the following
+     structure elements:
+
+   NAME            STRING    Name of the IRDC based on Galactic coordinates
+   L               FLOAT     Galactic longitude of the centriod of the ellipse
+   B               FLOAT     Galactic latitude of the centriod of the ellipse
+   I_MIN           FLOAT     Minimum intensity w/in the IRDC [MJy/sr]
+   I_MIR           FLOAT     MIR-average intensity around the IRDC [MJy/sr]
+   DEL_I           FLOAT     Fractional variation in MIR background
+   MAJ             FLOAT     Semi-major axis size of the IRDC (arcsec)
+   MIN             FLOAT     Semi-minor axis size of the IRDC (arcsec)
+   PA_IRDC         INT       Position angle (in Gal. coords) North of l=0
+   R_EQ            FLOAT     Equivalent radius of the IRDC (arcsec)
+   TAU_PEAK        FLOAT     Peak 8 um opacity of the IRDC
+   TAU_AV          FLOAT     Averaged 8 um opacity of the IRDC
+   TAU_SAT         FLOAT     8 um saturation opacity
+   FRAG            INT       Number of fragments within the IRDC
+   FIELD_24        BYTE      [y/n] 24 um star in the field
+   IRDC_24         BYTE      [y/n] 24 um star in the IRDC
+   SIGMA_24        FLOAT     Surface density of 24 um stars (arcmin^-2)
+   
+
+
+------
+TPEB, 02/15/11

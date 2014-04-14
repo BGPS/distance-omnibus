@@ -1,0 +1,19 @@
+### README_mrt ###
+
+The local/mrt/ directory contains Machine Readable Tables related to the
+(sub-)millimeter survey being used with distance-omnibus.  MRTs must be
+in CDS format (http://aas.org/authors/machine-readable-table-standards),
+as they are read in by the IDL routine read_mrt.pro.
+
+Below is a brief description of the files contained herein under version
+control:
+
+
+Text File Name        Paper                      Table Description
+------------------------------------------------------------------------------
+bolocatV101.mrt       Rosolowsky et al (2010)    Bolocat V1.0.1
+Schlingman_HHT.mrt    Schlingman et al (2011)    BGPS HCO+/N2H+ Spectra
+Dunham_MIR.mrt        Dunham et al (2011a)       Mid-IR properties of BGPS
+Dunham_NH3.mrt        Dunham et al (2011b,2010)  NH3 Velocities from GBT
+Shirley_HHT.mrt       Shirley et al (2013)       Full BGPS HCO+/N2H+ Catalog
+CS21_ARO.mrt          Shirley (2012, priv.comm)  CS(2-1) Velocity catalog	

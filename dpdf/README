@@ -1,0 +1,34 @@
+###========== README ==========###
+
+This README is for the dpdf/ directory of the distance-omnibus code repository.
+These routines compute Distance Probability Density Functions, and form the
+core of the code.
+
+Each prob_*.pro routine returns a DPDF with unit total probability.  Which 
+routines are run, and the order in which they are computed, are determined by 
+the dpdf_params.conf configuration file.  A value of 0 or blank indicates that 
+the  associated routine will not be run, integers greater than zero specify the 
+order in which the DPDFs are run.
+
+Currently extant DPDF routines are:
+------------------------------------
+prob_emaf.pro        -- EMAF morphological matching (1)
+prob_grsmatch.pro    -- Extracts kinematic distance from GRS 13CO data (2)
+prob_h2.pro          -- Molecular hydrogen (H2) distribution (1)
+prob_kdist.pro       -- Kinematic distance DPDF (1)
+prob_hrds.pro        -- Apply KDA resolution of HRDS HII regions (2)
+prob_parallax.pro    -- Apply trigonometric parallax distance (2)
+prob_knownd.pro      -- Manually assign distances to known regions (2)
+
+References: (1) Ellsworth-Bowers et al. (2013, ApJ, 770, 39)
+	    (2) Ellsworth-Bowers et al. (2014, ApJ, 7vv, ppp)
+------------------------------------
+
+With the development of additional DPDF methods, the assocated prob_*.pro
+routines will be placed in this directory, and corresponding entries in
+conffiles/dpdf_params.conf will be added.
+
+
+
+
+Last Updated: 02/27/14, TPEB

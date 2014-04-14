@@ -1,0 +1,40 @@
+###========== README ==========###
+
+This README is for the conffiles/ directory of the distance-omnibus code
+repository.  Configuration files are used to tell the code:
+  1. Where to find the data products for the (sub-)millimeter dust continuum 
+     survey being used with the code;
+  2. Galactic parameters to be used, such as R0, rotation curve, etc.
+  3. Which prior DPDFs to run, and in what order.
+  4. Potentially any other information needed for a given purpose.
+
+
+
+Files in this directory under version control:
+----------------------------------------------
+
+### Survey-specific Configuration Files ###
+survey_info.conf       -- Symlink to or file containing survey information
+survey_info_bgps2.conf -- Bolocam Galactic Plane Survey V2.0 
+survey_info.blank      -- Config file with all entries blank
+
+### General Configuration Files ###
+galactic_params.conf   -- Galactic parameters, including R0, rotcurve, etc.
+dpdf_params.conf       -- DPDF computation parameters: inclusion, order, etc.
+ancillary.conf         -- Information related to ancillary data sets.
+
+### Local Machine Configuration Files ###
+local_layout.conf      -- Locations of files on the local machine
+
+### README Files ###
+README files associated with each of the config file types listed above are
+also present in this directory.  Consult individual README files for specifics
+on the contents of the configuration files.
+
+
+------
+
+Changelog:
+   Created:  02/14/13, TPEB -- Initial version.
+   Modified: 02/21/13, TPEB -- Added mention of additional README files
+   Modified: 02/27/14, TPEB -- Clean up of documentation.

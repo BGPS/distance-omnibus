@@ -1,0 +1,49 @@
+# The distance-omnibus code base uses the GRS ^13^CO data cubes.
+# 
+# GRS data files may be accessed via:
+#     	 http://grunt.bu.edu/grs-stitch/source/
+# 
+# This list tells the distance-omnibus code where to find the required files
+#-----------------------------------------------------------------------------
+/d3/GRS/grs-15-cube.fits
+/d3/GRS/grs-16-cube.fits
+/d3/GRS/grs-17-cube.fits
+/d3/GRS/grs-18-cube.fits
+/d3/GRS/grs-19-cube.fits
+/d3/GRS/grs-20-cube.fits
+/d3/GRS/grs-21-cube.fits
+/d3/GRS/grs-22-cube.fits
+/d3/GRS/grs-23-cube.fits
+/d3/GRS/grs-24-cube.fits
+/d3/GRS/grs-25-cube.fits
+/d3/GRS/grs-26-cube.fits
+/d3/GRS/grs-27-cube.fits
+/d3/GRS/grs-28-cube.fits
+/d3/GRS/grs-29-cube.fits
+/d3/GRS/grs-30-cube.fits
+/d3/GRS/grs-31-cube.fits
+/d3/GRS/grs-32-cube.fits
+/d3/GRS/grs-33-cube.fits
+/d3/GRS/grs-34-cube.fits
+/d3/GRS/grs-35-cube.fits
+/d3/GRS/grs-36-cube.fits
+/d3/GRS/grs-37-cube.fits
+/d3/GRS/grs-38-cube.fits
+/d3/GRS/grs-39-cube.fits
+/d3/GRS/grs-40-cube.fits
+/d3/GRS/grs-41-cube.fits
+/d3/GRS/grs-42-cube.fits
+/d3/GRS/grs-43-cube.fits
+/d3/GRS/grs-44-cube.fits
+/d3/GRS/grs-45-cube.fits
+/d3/GRS/grs-46-cube.fits
+/d3/GRS/grs-47-cube.fits
+/d3/GRS/grs-48-cube.fits
+/d3/GRS/grs-49-cube.fits
+/d3/GRS/grs-50-cube.fits
+/d3/GRS/grs-51-cube.fits
+/d3/GRS/grs-52-cube.fits
+/d3/GRS/grs-53-cube.fits
+/d3/GRS/grs-54-cube.fits
+/d3/GRS/grs-55-cube.fits
+/d3/GRS/grs-56-cube.fits

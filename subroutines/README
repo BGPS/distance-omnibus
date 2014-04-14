@@ -1,0 +1,11 @@
+Last Updated: 2014-Mar-13
+
+The subroutines/ directory contains specific utility-type subroutines for use
+with the distance-ombnibus repository.  These are more specific than the very-
+general routines in the utils/ directory, but are very helpful for chunking
+the distance-omnibus code.
+
+Directory contents:
+
+
+######## NEEDS MUCH UPDATING!!! ########

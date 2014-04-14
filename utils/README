@@ -1,0 +1,12 @@
+Last Updated: 2014-Mar-13
+
+The utils/ directory contains helpful general utilities that are neither
+specific to the distance-omnibus code base nor are found in the required
+external libraries (see root directory README).  Some of these utilities were
+written intially for distance-omnibus and others were gathered from elsewhere
+but used by the principal routines in this repository.
+
+Directory contents:
+
+
+######## NEEDS MUCH UPDATING!!! ########

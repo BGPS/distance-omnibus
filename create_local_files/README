@@ -1,0 +1,58 @@
+Last Updated: 2014-Mar-13
+
+The create_local_files/ directory contains the routines necessary to generate
+many of the large files (or collections of files) used by the code base and
+found in the local/ directory.  These are routines used for create intermediate
+data products, and not the more general subroutine-type files found in the
+subroutines/ directory.
+
+Directory contents:
+
+
+######## NEEDS MUCH UPDATING!!! ########
+   FOUNDATIONAL ROUTINES (CREATE OFT-USED IDL SAVE FILES):
+assoc_bgps_bolocat.pro -- Associates the Bolocat objects with the BGPS released 
+		       	  maps and creates the IDL save file 
+			  local/BGPS_v102_map_locations.sav (often called the 
+			  'map locations' file).
+
+   POSTAGE-STAMP CREATION ROUTINES:
+bgps_postage.pro           -- Routine to create the postage-stamp images for
+			      BGPS sources.  Places images in the 
+			      local/postage directory.
+glimpse_postage.pro        -- Routine to create the postage-stamp images from
+			      the GLIMPSE Band 4 maps.  Places images in the 
+			      local/postage directory.
+igps_continuum_postage.pro -- Routine to create the postage-stamp images from
+			      the IGPS continuum maps.  Places images in the 
+			      local/postage directory.
+grs_postage.pro            -- Routine to create the postage-stamp images from
+			      velocity-integrating the GRS data cubes over
+			      the dense-gas velocity profile.  Places images 
+			      in the local/postage directory.
+hi_postage.pro             -- Routine to create the postage-stamp images from
+			      velocity-integrating the HI data cubes over
+			      the dense-gas velocity profile.  Places images 
+			      in the local/postage directory.
+
+   CREATION OF THE 'ON-OFF' SPECTRA FROM THE DATA CUBES:
+generate_grs_spectra_local.pro -- Creates the GRS IDL structure and runs 
+			       	  grsmatch.pro on each BGPS object to generate 
+				  an 'On-Off' spectrum.  The data structure also
+				  contains the 'on' and 'off' spectra and other 
+				  relevant information.
+generate_hi_spectra_local.pro  -- Creates the HI IDL structure and runs 
+			       	  hisa.pro on each BGPS object to generate 
+				  an 'On-Off' spectrum.  The data structure also
+				  contains the 'on' and 'off' spectra and other 
+				  relevant information.
+
+   VELOCITY STRUCTURE CREATION AND POPULATION ROUTINES:
+create_velocity_structure.pro -- Creates the velocity structure for holding 
+			      	 spectra of all dense gas tracer velocities, 
+				 plus GRS 13CO, based on the current parameters 
+				 in galactic_params.pro.  Places strucutre into 
+				 an IDL save file 
+				 (local/bgps_velocity_struct.sav).
+import_densegas_spectra.pro   -- Import the various dense gas tracer spectra 
+			      	 into a single velocity structure for analysis.
