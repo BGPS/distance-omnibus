@@ -16,6 +16,10 @@
 ;       X      -- x-position (in DATA units) to place the line
 ;
 ; OPTIONAL INPUTS:
+;       YRANGE -- Specify the y-range for vertical line, if not the
+;                 whole plot range.
+;       XRANGE -- Specift the x-range for horizontal line, if not the
+;                 whole plot range (only valid with /HORIZ).
 ;       Routine accepts usual graphics keywords and passes them to
 ;       CGPLOTS via _EXTRA parameter.
 ;
@@ -44,17 +48,27 @@
 ;       Modified: 11/09/12, TPEB -- Switched from plots -> cgPlots to
 ;                                   allow for color to be specified by
 ;                                   name, not just number.
+;       Modified: 04/21/14, TPEB -- Allow [XY]RANGE to be specified
+;                                   for lines that don't go all
+;                                   the way.  Add COMPILE_OPT
+;                                   command.
 ;-
 
-PRO VLINE, x, HORIZ=horiz, LOG=log, XLOG=xlog, YLOG=ylog, _EXTRA=extra
+PRO VLINE, x, HORIZ=horiz, LOG=log, XLOG=xlog, YLOG=ylog, YRANGE=yrange, $
+           XRANGE=xrange, _EXTRA=extra
+  
+  COMPILE_OPT IDL2, LOGICAL_PREDICATE
   
   IF KEYWORD_SET(log) THEN BEGIN
-     xlog=1b
-     ylog=1b
+     xlog = 1b
+     ylog = 1b
   ENDIF
   
-  IF KEYWORD_SET(xlog) THEN xr = 10^(!x.crange) ELSE xr = !x.crange
-  IF KEYWORD_SET(ylog) THEN yr = 10^(!y.crange) ELSE yr = !y.crange
+  xr = n_elements(xrange) ? xrange : !x.crange
+  yr = n_elements(yrange) ? yrange : !y.crange
+  
+  IF KEYWORD_SET(xlog) THEN xr = 10^(xr)
+  IF KEYWORD_SET(ylog) THEN yr = 10^(yr)
   
   IF KEYWORD_SET(horiz) THEN BEGIN
      cgPlots,xr[0],x

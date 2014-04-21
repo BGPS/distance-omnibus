@@ -1,0 +1,41 @@
+Last Updated: 2014-Apr-15
+
+The emaf/ directory contains the routines related to the EMAF prior DPDF, as
+described in Ellsworth-Bowers et al. (2013, ApJ, 770, 39; EB13).
+
+User Routines:
+-------------------------
+omni_mir_examine.pro   -- Creates the PostScript figures required for a by-eye
+		       	  examination of EMAF candidates.  If this routine has
+			  not been run, and the corresponding *_reject_emaf.txt
+			  has not been created, distance_omnibus.pro will exit
+			  with a notice to follow this step.
+
+			  ** Important **
+			  Upon completion of the by-eye examination, create a
+			  text file in the local/ directory containing the
+			  catalog numbers of the sources not meeting the
+			  selection criteria set out in EB13.
+
+driver_morph.pro       -- Debugging routine used to drive the morphological
+		       	  matching in omni_emaf_morph.pro from outside
+			  distance-omnibus.pro.
+			  
+Autonomous Routines:
+-------------------------
+omni_generate_emaf.pro -- Generates the list of EMAF-identified objects from 
+		       	  the SURVEY catalog.  This routine is called from 
+			  distance_omnibus.pro and should not need to be 
+			  called independently.
+
+omni_emaf_morph.pro    -- Performs the morphological matching between a SURVEY
+		       	  catalog object and the GLIMPSE 8-um mosaics.  This
+			  routine is called from distance_omnibus.pro and 
+			  should not need to be called independently, but it 
+			  may be used with driver_morph.pro for diagnostic
+			  purposes.
+			  
+Data Files:
+-------------------------
+irdc_full_data.sav
+irdc_full_data.README
