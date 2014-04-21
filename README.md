@@ -9,4 +9,4 @@ The methodology was introduced in Ellsworth-Bowers et al. (2013, ApJ, 770, 39) a
 
 ## Release Information
 
-Pre-release version [v0.9](https://github.com/tbowers7/distance-omnibus/archive/v0.9.tar.gz) available as of 4/14/14.
+Pre-release version [v0.9](https://github.com/BGPS/distance-omnibus/archive/v0.9.tar.gz) available as of 4/14/14.
