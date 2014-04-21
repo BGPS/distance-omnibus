@@ -17,7 +17,7 @@
 ;
 ;
 ; OPTIONAL INPUTS:
-;       NONE
+;       THICK -- Thickness of plotting and axes.  [Default: 3]
 ;
 ; KEYWORD PARAMETERS:
 ;       DONE -- Close the PostScript file and return to X
@@ -47,10 +47,13 @@
 ;       Modified: 07/23/13, TPEB -- Set !p.thick = 3 because
 ;                                   I'm sick of always having
 ;                                   to specify it in plot commands!
+;       Modified: 04/19/14, TPEB -- Allow user-specifiable THICK for
+;                                   making journal-ready figures of
+;                                   the appropriate scale.
 ;
 ;-
 
-PRO MYPS, filename, DONE=done, MP=mp, _EXTRA=extra
+PRO MYPS, filename, DONE=done, MP=mp, THICK=thick, _EXTRA=extra
   
   COMPILE_OPT IDL2
   
@@ -72,8 +75,9 @@ PRO MYPS, filename, DONE=done, MP=mp, _EXTRA=extra
      set_plot,'ps'
      !p.font = 0
      mydevice,filename,_EXTRA=extra
-     !x.thick = 3
-     !y.thick = 3
-     !p.thick = 3
+     IF ~KEYWORD_SET(thick) THEN thick = 3 ; Set default, but specifiable
+     !x.thick = thick
+     !y.thick = thick
+     !p.thick = thick
   ENDELSE
 END
