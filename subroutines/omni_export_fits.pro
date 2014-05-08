@@ -57,6 +57,9 @@
 ;                                   to specify /ALL from the
 ;                                   configuration file rather than
 ;                                   just command-line input.
+;       Modified: 05/08/14, TPEB -- Removed the 'help' command at the
+;                                   end, as it produces output that
+;                                   may confound other users.
 ;
 ;-
 
@@ -251,8 +254,6 @@ PRO OMNI_EXPORT_FITS, fn, CONFFILE=cfile, ALL=all
   ENDIF ELSE message,'For mass-function computation, no additional '+$
                      'constraints beyond a kinematic distance are requested.',$
                      /inf
-  
-  help,constrain,/str
   
   undefine,pvec,constrain
   

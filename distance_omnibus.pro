@@ -172,6 +172,10 @@
 ;                                   account for miscreant sources.
 ;       Modified: 05/08/14, TPEB -- Add LOCAL.OUTPUT element to point
 ;                                   to the actual output directory.
+;       Modified: 05/08/14, TPEB -- Add check for and definition of
+;                                   !CONST system variable.
+;       Modified: 05/08/14, TPEB -- Add "all done" message to be
+;                                   printed before the routine ends.
 ;
 ;-
 
@@ -179,6 +183,7 @@ PRO DISTANCE_OMNIBUS, CONFFILE=cfile,CNUM_LIST=cnum_list, VERBOSE=verbose, $
                       START=start, REAR=rear, PLOT=plot, PS=ps
   
   COMPILE_OPT IDL2, LOGICAL_PREDICATE
+  compat_const                  ; Check for the !CONST system variable
   
   COMMON OMNI_CONFIG, conf, mw, local, dpdfs, ancil, fmt, conffile
   COMMON VEL_BLOCK, v, v_std
@@ -620,8 +625,8 @@ PRO DISTANCE_OMNIBUS, CONFFILE=cfile,CNUM_LIST=cnum_list, VERBOSE=verbose, $
      ;;===== BEGIN PLOTTING JUNK =====
      IF plot THEN BEGIN
         IF ps THEN BEGIN
-           filename = string(s[j].cnum,format="('"+local.output+conf.survey+$
-                             "_prob',"+fmt2+",'.eps')")
+           filename = string(local.output+conf.survey,s[j].cnum,$
+                             format="(A0,'_prob',"+fmt2+",'.eps')")
            IF verbose THEN print,filename
            myps,filename
         ENDIF
@@ -656,4 +661,13 @@ PRO DISTANCE_OMNIBUS, CONFFILE=cfile,CNUM_LIST=cnum_list, VERBOSE=verbose, $
   ;; Clean up the memory, dude
   undefine,pvec,v,grs,hi
   
+  ;; Post a little "all done" message
+  message,'The routine distance_omnibus.pro has successfully completed.',/inf
+  message,'',/inf
+  msg = 'The output IDL save files '+$
+        (dpdfs.fits ? 'and FITS file containing the posterior DPDFs ':'')+$
+        'may be found in the local/ directory (i.e. local/'+conf.survey+$
+        '_pvec.sav).',/inf
+  
+  RETURN
 END
