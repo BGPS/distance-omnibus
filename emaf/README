@@ -16,10 +16,6 @@ omni_mir_examine.pro   -- Creates the PostScript figures required for a by-eye
 			  text file in the local/ directory containing the
 			  catalog numbers of the sources not meeting the
 			  selection criteria set out in EB13.
-
-driver_morph.pro       -- Debugging routine used to drive the morphological
-		       	  matching in omni_emaf_morph.pro from outside
-			  distance-omnibus.pro.
 			  
 Autonomous Routines:
 -------------------------

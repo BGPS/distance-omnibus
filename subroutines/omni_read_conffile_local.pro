@@ -47,6 +47,9 @@
 ;       Modified: 02/06/14, TPEB -- Split out this auxillary routine
 ;                                   from OMNI_RESD_CONFFILE.pro into a
 ;                                   separate file.
+;       Modified: 05/08/14, TPEB -- Add OUTPUT keyword to point to the
+;                                   general output directory (usually
+;                                   plots).
 ;
 ;-
 
@@ -67,6 +70,7 @@ FUNCTION OMNI_READ_CONFFILE_LOCAL, lun, conffile, lnum
           vgps:'',$
           cgps:'',$
           sgps:'',$
+          output:'',$
           postage:'',$
           pssize:0.,$
           emafpost:'',$
@@ -85,6 +89,7 @@ FUNCTION OMNI_READ_CONFFILE_LOCAL, lun, conffile, lnum
      CASE key OF
         'postage':    conf.postage    = val
         'pssize':     conf.pssize     = (nword EQ 1) ? 0. : float(val)
+        'output':     conf.output     = val
         'emafpost':   conf.emafpost   = val
         'gpssize':    conf.gpssize    = (nword EQ 1) ? 0. : float(val)
         'mwffore':    conf.mwffore    = val

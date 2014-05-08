@@ -26,6 +26,7 @@
 ;
 ; KEYWORD PARAMETERS:
 ;       NONE
+
 ;
 ; OUTPUTS:
 ;       NONE
@@ -67,6 +68,8 @@
 ;                                   because I'm neurotic.  Also,
 ;                                   set aperture diameter based on
 ;                                   SURVEY solid angle.
+;       Modified: 05/08/14, TPEB -- Add LOCAL.OUTPUT element to point
+;                                   to the actual output directory.
 ;
 ;-
 
@@ -128,7 +131,7 @@ PRO OMNI_MIR_EXAMINE, fn, CONFFILE=cfile, TXTONLY=txtonly
   IF txtonly THEN RETURN        ; Don't make plots
   
   ;;==================================================================
-  ;; Generate the images as .EPS files in the directory ./local/output/
+  ;; Generate the images as .EPS files in the directory LOCAL.OUTPUT
   
   ;; Plotting settings
   ellcol = 'Cyan'
@@ -184,7 +187,7 @@ PRO OMNI_MIR_EXAMINE, fn, CONFFILE=cfile, TXTONLY=txtonly
      
      
      ;; Prep plotting
-     myps,'./local/output/'+conf.survey+'_mirexam'+cnum+'.eps',xsize=6.5,$
+     myps,local.output+conf.survey+'_mirexam'+cnum+'.eps',xsize=6.5,$
           ysize=5.65,/cmyk
      multiplot_xm, [2,2], ygap=0.02,xgap=0.042,/xmargin,mpcharsize=plotcs*0.7
      
