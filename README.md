@@ -1,7 +1,7 @@
 distance-omnibus
 ================
 
-## Description
+### Description
 
 This is the source repository for the Bolocam Galactic Plane Survey (BGPS) effort to resolve distance measurements to catalog sources. Through the Bayesian application of prior Distance Probability Density Functions (DPDFs) derived from ancillary data to a kinematic distance likelihood, this code derives posterior DPDFs for catalog sources. This methodology is generalized for use with any (sub-)millimeter survey of the Galactic plane. 
 
@@ -27,6 +27,6 @@ Because **distance-omnibus** estimates the distance to dense molecular cloud str
 
 
 =======
-## Release Information
+### Release Information
 
 Pre-release version [v0.9](https://github.com/BGPS/distance-omnibus/archive/v0.9.tar.gz) available as of 4/14/14.
