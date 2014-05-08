@@ -43,7 +43,7 @@
 ; KEYWORD PARAMETERS:
 ;       MAKE_PS  -- Create postscript files containing the various
 ;                   images and plot of likelihood as a function of
-;                   distance.  Creates files in the './local/output'
+;                   distance.  Creates files in the LOCAL.OUTPUT
 ;                   directory.
 ;       VERBOSE  -- Be verbose with output, including object # and
 ;                   statistics related to the TAUMAP.
@@ -162,6 +162,8 @@
 ;                                   unit integral probability.
 ;       Modified: 03/20/13, TPEB -- Added CONFFILE optional input for
 ;                                   conformity with other routines.
+;       Modified: 05/08/14, TPEB -- Add LOCAL.OUTPUT element to point
+;                                   to the actual output directory.
 ;
 ;-
 
@@ -336,7 +338,7 @@ FUNCTION OMNI_EMAF_MORPH, s, dvec, MAKE_PS=make_ps, VERBOSE=verbose, $
      pr = set_plot_range(irac)
      
      ;; Set plot environment
-     myps,'./local/output/'+conf.survey+'_morph'+scnum+'.eps',$
+     myps,local.output+conf.survey+'_morph'+scnum+'.eps',$
           xsize=6.5,ysize=5.65,ct=0,/cmyk
      charsize = 0.7
      chi = cgSymbol('chi')
