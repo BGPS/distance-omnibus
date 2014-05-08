@@ -174,6 +174,8 @@
 ;                                   to the actual output directory.
 ;       Modified: 05/08/14, TPEB -- Add check for and definition of
 ;                                   !CONST system variable.
+;       Modified: 05/08/14, TPEB -- Add "all done" message to be
+;                                   printed before the routine ends.
 ;
 ;-
 
@@ -659,4 +661,13 @@ PRO DISTANCE_OMNIBUS, CONFFILE=cfile,CNUM_LIST=cnum_list, VERBOSE=verbose, $
   ;; Clean up the memory, dude
   undefine,pvec,v,grs,hi
   
+  ;; Post a little "all done" message
+  message,'The routine distance_omnibus.pro has successfully completed.',/inf
+  message,'',/inf
+  msg = 'The output IDL save files '+$
+        (dpdfs.fits ? 'and FITS file containing the posterior DPDFs ':'')+$
+        'may be found in the local/ directory (i.e. local/'+conf.survey+$
+        '_pvec.sav).',/inf
+  
+  RETURN
 END
