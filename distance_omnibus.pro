@@ -620,8 +620,8 @@ PRO DISTANCE_OMNIBUS, CONFFILE=cfile,CNUM_LIST=cnum_list, VERBOSE=verbose, $
      ;;===== BEGIN PLOTTING JUNK =====
      IF plot THEN BEGIN
         IF ps THEN BEGIN
-           filename = string(s[j].cnum,format="('"+local.output+conf.survey+$
-                             "_prob',"+fmt2+",'.eps')")
+           filename = string(local.output+conf.survey,s[j].cnum,$
+                             format="(A0,'_prob',"+fmt2+",'.eps')")
            IF verbose THEN print,filename
            myps,filename
         ENDIF
