@@ -97,12 +97,15 @@
 ;                                   matter without the need for
 ;                                   hijinks or tomfoolery.  Also, get
 ;                                   fancy with IDL system variables.
+;       Modified: 05/08/14, TPEB -- Add check for and definition of
+;                                   !CONST system variable.
 ;
 ;-
 
 FUNCTION OMNI_VPHYS2VLSR, l, b, d, VS=vs, VOBS=vobs
   
   COMPILE_OPT IDL2, LOGICAL_PREDICATE
+  compat_const                  ; Check for the !CONST system variable
   
   COMMON OMNI_CONFIG, conf, mw, local, dpdfs, ancil, fmt, conffile
   

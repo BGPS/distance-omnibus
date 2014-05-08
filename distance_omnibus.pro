@@ -172,6 +172,8 @@
 ;                                   account for miscreant sources.
 ;       Modified: 05/08/14, TPEB -- Add LOCAL.OUTPUT element to point
 ;                                   to the actual output directory.
+;       Modified: 05/08/14, TPEB -- Add check for and definition of
+;                                   !CONST system variable.
 ;
 ;-
 
@@ -179,6 +181,7 @@ PRO DISTANCE_OMNIBUS, CONFFILE=cfile,CNUM_LIST=cnum_list, VERBOSE=verbose, $
                       START=start, REAR=rear, PLOT=plot, PS=ps
   
   COMPILE_OPT IDL2, LOGICAL_PREDICATE
+  compat_const                  ; Check for the !CONST system variable
   
   COMMON OMNI_CONFIG, conf, mw, local, dpdfs, ancil, fmt, conffile
   COMMON VEL_BLOCK, v, v_std
