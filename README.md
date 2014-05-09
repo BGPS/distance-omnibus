@@ -14,7 +14,7 @@ This package is written entirely in the [Interactive Data Language (IDL)](http:/
 
 Several external libraries of IDL routines are also required to run **distance-omnibus**.  These libraries must be installed on the local machine and their paths included in the IDL path.  The **distance-omnibus** code assumes you have a version of these libraries *no older* than the release date shown below.
    * IDLASTRO (http://idlastro.gsfc.nasa.gov/) or (https://github.com/wlandsman/IDLAstro)
-   * The Coyote Graphics System (http://www.idlcoyote.com/idldoc/cg/index.html)
+   * The Coyote Graphics System (http://www.idlcoyote.com/idldoc/cg/index.html) or (https://code.google.com/p/idl-coyote/)
    * The Markwardt IDL Library (http://www.physics.wisc.edu/~craigm/idl/)
 
 
