@@ -164,6 +164,10 @@
 ;                                   conformity with other routines.
 ;       Modified: 05/08/14, TPEB -- Add LOCAL.OUTPUT element to point
 ;                                   to the actual output directory.
+;       Modified: 05/09/14, TPEB -- Change PROBCOLOR -->
+;                                   OMNI_PROBCOLOR, must have missed
+;                                   this one when the change
+;                                   originally occurred.
 ;
 ;-
 
@@ -414,7 +418,7 @@ FUNCTION OMNI_EMAF_MORPH, s, dvec, MAKE_PS=make_ps, VERBOSE=verbose, $
      
      IF do_overlay THEN BEGIN
         totprob = (kprob * invchsq * h2_prob) / MAX(kprob * invchsq * h2_prob)
-        cgOplot,d/1.d3, totprob, thick=6, color=probcolor(2)
+        cgOplot,d/1.d3, totprob, thick=6, color=omni_probcolor(2)
      ENDIF
      
      axis,xaxis=0,xthick=3,/xst,xtickformat='blank_axis'

@@ -658,8 +658,10 @@ PRO DISTANCE_OMNIBUS, CONFFILE=cfile,CNUM_LIST=cnum_list, VERBOSE=verbose, $
      IF dpdfs.fits THEN omni_export_fits,'./local/'+conf.survey+'_pvec.sav'
   ENDIF
   
-  ;; Clean up the memory, dude
+  ;; Clean up the memory and clear out any math errors ('cause we
+  ;; don't care!).
   undefine,pvec,v,grs,hi
+  void = Check_Math()
   
   ;; Post a little "all done" message
   message,'The routine distance_omnibus.pro has successfully completed.',/inf
