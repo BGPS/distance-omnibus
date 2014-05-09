@@ -664,10 +664,10 @@ PRO DISTANCE_OMNIBUS, CONFFILE=cfile,CNUM_LIST=cnum_list, VERBOSE=verbose, $
   ;; Post a little "all done" message
   message,'The routine distance_omnibus.pro has successfully completed.',/inf
   message,'',/inf
-  msg = 'The output IDL save files '+$
-        (dpdfs.fits ? 'and FITS file containing the posterior DPDFs ':'')+$
-        'may be found in the local/ directory (i.e. local/'+conf.survey+$
-        '_pvec.sav).',/inf
+  message,'The output IDL save files '+$
+          (dpdfs.fits ? 'and FITS file containing the posterior DPDFs ':'')+$
+          'may be found in the local/ directory (i.e. local/'+conf.survey+$
+          '_pvec.sav).',/inf
   
   RETURN
 END
