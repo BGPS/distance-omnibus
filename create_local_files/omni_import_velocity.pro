@@ -106,6 +106,9 @@
 ;       Modified: 03/11/14, TPEB -- Add flag kick for NON-FINITE
 ;                                   linewidths (see above) for
 ;                                   downstream analysis.
+;       Modified: 05/09/14, TPEB -- Add check for SURVEY map_locaitons
+;                                   save file... run
+;                                   OMNI_ASSOC_CATALOG if not present.
 ;
 ;-
 
@@ -139,8 +142,11 @@ PRO OMNI_IMPORT_VELOCITY, CONFFILE=cfile, VERBOSE=verbose, NOGRSFILT=nogrsfilt
   vel = conf.v[ind]
   
   ;; Read in the survey catalog & count entries, and also
-  ;;   read in SURVEY structure
+  ;;   read in SURVEY structure (run OMNI_ASSOC_CATALOG if not
+  ;;   present).
   s = omni_read_cat(conf.cat,ncat,fmt)
+  surv_fn = './local/'+conf.survey+'_map_locations.sav'
+  IF ~FILE_TEST(surv_fn) THEN omni_assoc_catalog
   restore,'./local/'+conf.survey+'_map_locations.sav',VERBOSE=~silent
   
   ;; If present, locate the label maps

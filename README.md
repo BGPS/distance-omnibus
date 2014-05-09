@@ -13,8 +13,8 @@ The methodology was introduced in [Ellsworth-Bowers et al. (2013, ApJ, 770, 39)]
 This package is written entirely in the [Interactive Data Language (IDL)](http://www.exelisvis.com/ProductsServices/IDL.aspx), and requires a recent version (8.0 or higher) to run.
 
 Several external libraries of IDL routines are also required to run **distance-omnibus**.  These libraries must be installed on the local machine and their paths included in the IDL path.  The **distance-omnibus** code assumes you have a version of these libraries *no older* than the release date shown below.
-   * IDLASTRO (http://idlastro.gsfc.nasa.gov/)
-   * The Coyote Graphics System (http://www.idlcoyote.com/idldoc/cg/index.html)
+   * IDLASTRO (http://idlastro.gsfc.nasa.gov/) or (https://github.com/wlandsman/IDLAstro)
+   * The Coyote Graphics System (http://www.idlcoyote.com/idldoc/cg/index.html) or (https://code.google.com/p/idl-coyote/)
    * The Markwardt IDL Library (http://www.physics.wisc.edu/~craigm/idl/)
 
 
@@ -29,4 +29,4 @@ Because **distance-omnibus** estimates the distance to dense molecular cloud str
 =======
 ### Release Information
 
-Pre-release version [v0.9.1](https://github.com/BGPS/distance-omnibus/archive/v0.9.1.tar.gz) available as of 5/8/14.
+Pre-release version [v0.9.2](https://github.com/BGPS/distance-omnibus/archive/v0.9.2.tar.gz) available as of 5/9/14.

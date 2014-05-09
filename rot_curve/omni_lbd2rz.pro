@@ -92,6 +92,8 @@
 ;                                   arccos to correctly assign
 ;                                   sign to Q3 & Q4 objects.  Also,
 ;                                   get fancy with IDL system variables.
+;       Modified: 05/08/14, TPEB -- Add check for and definition of
+;                                   !CONST system variable.
 ;
 ;-
 
@@ -99,6 +101,7 @@ PRO OMNI_LBD2RZ, l, b, d, R, Z, R0=R0, DPROJ=dproj, THETA=theta, $
                  XGAL=xgal, YGAL=ygal
   
   COMPILE_OPT IDL2, LOGICAL_PREDICATE
+  compat_const                  ; Check for the !CONST system variable
   
   COMMON OMNI_CONFIG, conf, mw, local, dpdfs, ancil, fmt, conffile
   
