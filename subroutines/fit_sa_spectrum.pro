@@ -36,7 +36,7 @@
 ;
 ; MODIFICATION HISTORY:
 ;       Created:  11/01/11, TPEB -- Initial Version
-;       Modified: 11/08/11, TPEB -- Modified to use GAUSS2, which
+;       Modified: 11/08/11, TPEB -- Modified to use GAUSS_1, which
 ;                                   follows the input pattern of
 ;                                   GAUSSFIT.  Also documentation
 ;                                   cleanup.
@@ -76,7 +76,7 @@ FUNCTION FIT_SA_SPECTRUM, v, sp, p, ESTIMATES=est, RMS=rms, QUIET=quiet, $
      
      IF ~ KEYWORD_SET( quiet ) THEN BEGIN
         print,'Est Gauss1: ',pest[0:2]
-        print,'Est Gauss2: ',pest[3:5]
+        print,'Est Gauss_1: ',pest[3:5]
      ENDIF     
      
   ENDIF ELSE pest = p

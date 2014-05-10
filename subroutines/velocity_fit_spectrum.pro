@@ -137,11 +137,11 @@ FUNCTION VELOCITY_FIT_SPECTRUM, v, VLSR=vlsr, HCOP=hcop, N2HP=n2hp, CS21=cs21,$
         
         ;; Do a preliminary Gaussian fit using gest as the starting
         ;;   point, force POSITIVE solution
-        A = MPFITFUN('gauss2',nvstd,nspec,nspec*0.+rms,PARINFO=parinfo,$
+        A = MPFITFUN('gauss_1',nvstd,nspec,nspec*0.+rms,PARINFO=parinfo,$
                          ;;ESTIMATES=parinfo.value,/POSITIVE,$
                          ERRMSG=errmsg, STATUS=status,/QUIET,$
                          CHISQ=chisq,DOF=dof)
-        yfit = gauss2(nvstd,A)
+        yfit = gauss_1(nvstd,A)
         IF status EQ 0 THEN BEGIN
            print,'(a) BGPS #'+string(v.cnum,format="(I4)")+'  '+errmsg
            print,parinfo.value
@@ -156,11 +156,11 @@ FUNCTION VELOCITY_FIT_SPECTRUM, v, VLSR=vlsr, HCOP=hcop, N2HP=n2hp, CS21=cs21,$
            maxt = max(nspec, mind)
            maxv = (nvstd[mind])[0]
            parinfo.value = [maxt,maxv,1.5]
-           A = MPFITFUN('gauss2',nvstd,nspec,nspec*0.+rms,PARINFO=parinfo,$
+           A = MPFITFUN('gauss_1',nvstd,nspec,nspec*0.+rms,PARINFO=parinfo,$
                             ;;ESITMATES=parinfo.value,/POSITIVE,$
                             ERRMSG=errmsg, STATUS=status,/QUIET,$
                             CHISQ=chisq,DOF=dof)
-           yfit = gauss2(nvstd,A)
+           yfit = gauss_1(nvstd,A)
            IF status EQ 0 THEN BEGIN
               print,'(b) BGPS #'+string(v.cnum,format="(I4)")+'  '+$
                     strupcase(line)+'  '+errmsg
@@ -197,7 +197,7 @@ FUNCTION VELOCITY_FIT_SPECTRUM, v, VLSR=vlsr, HCOP=hcop, N2HP=n2hp, CS21=cs21,$
         
         ;; Use sndi to decide what to return...
         IF sndi GE 6. THEN BEGIN
-           tfit = gauss2(v.v_std,A) 
+           tfit = gauss_1(v.v_std,A) 
            FA = A
            sn = sndi
            vlsr = A[1]

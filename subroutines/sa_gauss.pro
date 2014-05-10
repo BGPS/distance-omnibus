@@ -29,12 +29,12 @@
 ;       NONE
 ;
 ; PROCEDURES USED:
-;       GAUSS2 (modified from Markwardt)
+;       GAUSS_1 (modified from Markwardt)
 ;
 ; MODIFICATION HISTORY:
 ;
 ;       Created:  11/01/11, TPEB -- Initial Version
-;       Modified: 11/08/11, TPEB -- Modified to use GAUSS2, which
+;       Modified: 11/08/11, TPEB -- Modified to use GAUSS_1, which
 ;                                   follows the input pattern of
 ;                                   GAUSSFIT
 ;
@@ -48,7 +48,7 @@ FUNCTION SA_GAUSS, x, P, _EXTRA=extra
   g1 = p[0:2]
   g2 = p[3:5]
   
-  f = gauss2(x,g1) + gauss2(x,g2)
+  f = gauss_1(x,g1) + gauss_1(x,g2)
   
   RETURN,f
 END
