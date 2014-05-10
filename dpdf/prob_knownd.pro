@@ -103,7 +103,7 @@ FUNCTION PROB_KNOWND, s, DVEC = dvec, CONSTRAIN = constrain
         
         ;; Define a parallax array appropriate, and populate Gaussian
         piarr = dindgen(1001)/1000.d * 1d-3 ; parallax array from 0 to 1 mas
-        paral = gauss2(piarr,[1,pi,spi])
+        paral = gauss_1(piarr,[1,pi,spi])
         
      END
      
@@ -120,7 +120,7 @@ FUNCTION PROB_KNOWND, s, DVEC = dvec, CONSTRAIN = constrain
   
   ;; For the fun of it, convolve with Gaussian sigma = 0.2 kpc
   dc = d[0:long(floor(n_elements(d)/4.-1))]
-  prob = convol(prob,gauss2([dc-max(dc),dc],[1,0.d3,0.2d3]),/edge_trun,/nan) >0.
+  prob = convol(prob,gauss_1([dc-max(dc),dc],[1,0.d3,0.2d3]),/edge_trun,/nan) >0.
   prob /= total(prob)
   
   constrain = 1b

@@ -28,7 +28,7 @@
 ;
 ; OUTPUTS:
 ;       SPEC -- The velocity spectrum, as returned by the function
-;               GAUSS2.pro.
+;               GAUSS_1.pro.
 ;
 ; OPTIONAL OUTPUTS:
 ;       V_STD -- The abscissa vector used to generate SPEC.
@@ -61,6 +61,6 @@ FUNCTION OMNI_VSPEC, A, v_std, CONFFILE=cfile
   IF n_elements(v_std) EQ 0 THEN $
      v_std = findgen(conf.nvbin)*conf.deltav + conf.vstart
   
-  RETURN, gauss2(v_std,A)
+  RETURN, gauss_1(v_std,A)
   
 END

@@ -156,7 +156,7 @@ FUNCTION PROB_HRDS, s, DVEC = dvec, CONSTRAIN = constrain, N_HRDS=n_hrds, $
         
         ;; TANGENT -- The amplitude is comensurate with the erf()'s above.
         strmatch(hrd[ii].kdar,'T*'): BEGIN
-           dpdf += gauss2(d,[2.,tandist,width])/n3d[ii]
+           dpdf += gauss_1(d,[2.,tandist,width])/n3d[ii]
            kdar = kdar OR 4
         END
         

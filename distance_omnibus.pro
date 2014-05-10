@@ -176,6 +176,9 @@
 ;                                   !CONST system variable.
 ;       Modified: 05/08/14, TPEB -- Add "all done" message to be
 ;                                   printed before the routine ends.
+;       Modified: 05/09/14, TPEB -- Fix typos in above and add
+;                                   CHECK_MATH() call to clear out
+;                                   annoying "underflow" messages.
 ;
 ;-
 
