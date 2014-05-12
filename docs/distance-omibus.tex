@@ -1,0 +1,83 @@
+\documentclass[11pt]{amsart}
+\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
+%\geometry{landscape}                % Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+\title{Documentation for \texttt{distance-omnibus}}
+\author{T. Ellsworth-Bowers}
+\date{}                                           % Activate to display a given date or no date
+
+\begin{document}
+\maketitle
+
+\section{Description}
+
+This is the source repository for the Bolocam Galactic Plane Survey (BGPS) effort to resolve distance measurements to catalog sources. Through the Bayesian application of prior Distance Probability Density Functions (DPDFs) derived from ancillary data to a kinematic distance likelihood, this code derives posterior DPDFs for catalog sources. This methodology is generalized for use with any (sub-)millimeter survey of the Galactic plane.
+
+The methodology was introduced in Ellsworth-Bowers et al. (2013, ApJ, 770, 39) and demonstrated on the BGPS version 1 data (Aguirre et al. 2011, ApJS, 192, 4). An expansion of the distance methodology to include a new kinematic distance likelihood and prior DPDFs is presented in Ellsworth-Bowers et al. (2014, ApJ, vvv, ppp), and demonstrated on the re-reduced BGPS version 2 data of Ginsburg et al. (2013, ApJS, 208, 14).
+
+\section{Before You Begin}
+\subsection{Software Requirements}
+
+This package is written entirely in the Interactive Data Language (IDL), and requires a recent version (8.0 or higher) to run.
+
+Several external libraries of IDL routines are also required to run distance-omnibus. These libraries must be installed on the local machine and their paths included in the IDL path. The distance-omnibus code assumes you have a version of these libraries no older than the release date shown below.
+
+    IDLASTRO (http://idlastro.gsfc.nasa.gov/) or (https://github.com/wlandsman/IDLAstro)
+    The Coyote Graphics System (http://www.idlcoyote.com/idldoc/cg/index.html) or (https://code.google.com/p/idl-coyote/)
+    The Markwardt IDL Library (http://www.physics.wisc.edu/~craigm/idl/)
+
+\subsection{Ancillary Data Requirements}
+
+Because distance-omnibus estimates the distance to dense molecular cloud structures in the Milky Way based in part on ancillary data, the following data sets are required:
+
+    The Spitzer/GLIMPSE mid-infrared survey V3.5 mosaics (available for the GLIMPSE I and GLIMPSE II coverage regions). Specifically required are the Band 1 and Band 4 images (*\_I1.fits and *\_I4.fits).
+    The BU-FCRAO Galactic Ring Survey 13CO(1-0) data cubes (available here). The code assumes you have all the cubes to avoid edge effects.
+
+
+\section{Installation}
+
+How to install this mess...
+
+
+\subsection{Where to Put the Code}
+
+\subsection{Setting Up the Configuration Files}
+
+\subsection{Ancillary Data}
+
+
+
+\section{Running the Code}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}  

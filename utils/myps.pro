@@ -28,7 +28,12 @@
 ;       NONE (Opens / closes a PostScript file)
 ;
 ; OPTIONAL OUTPUTS:
-;       NONE  (Passes on anything else in the _EXTRA command to mydevice)
+;       NONE  (Passes on anything else in the _EXTRA command to
+;       mydevice)
+;
+; COMMON BLOCKS:
+;       _$FSC_PS_START_ -- For compatibility with cgSymbol.pro, since
+;                          I don't use the cgPS_Open routine.
 ;
 ; MODIFICATION HISTORY:
 ;
@@ -50,6 +55,8 @@
 ;       Modified: 04/19/14, TPEB -- Allow user-specifiable THICK for
 ;                                   making journal-ready figures of
 ;                                   the appropriate scale.
+;       Modified: 05/12/14, TPEB -- Add COMMON block for compatability
+;                                   with cgSymbol.pro.
 ;
 ;-
 
@@ -72,6 +79,11 @@ PRO MYPS, filename, DONE=done, MP=mp, THICK=thick, _EXTRA=extra
      !y.thick = 0
      !p.thick = 0
   ENDIF ELSE BEGIN
+     ;; A common block to communicate with cgPS_Open, 
+     ;;   workaround for cgSymbol
+     COMMON _$FSC_PS_START_, ps_struct
+     IF ~exist(ps_struct) THEN ps_struct = {font:0, tt_font:''}
+     
      set_plot,'ps'
      !p.font = 0
      mydevice,filename,_EXTRA=extra
