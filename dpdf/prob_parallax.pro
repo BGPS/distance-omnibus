@@ -134,7 +134,7 @@ FUNCTION PROB_PARALLAX, s, DVEC = dvec, CONSTRAIN = constrain
      
      ;; Construct a Gaussian in PARALLAX space, corresponding to the
      ;; data from the BeSSeL table
-     yarr = gauss2(pxarr,[1.,bes[ii].px,bes[ii].e_px])
+     yarr = gauss_1(pxarr,[1.,bes[ii].px,bes[ii].e_px])
      
      ;; Interpolate this onto the DISTANCE scale, weighted by the
      ;;    normalized 3D distance...

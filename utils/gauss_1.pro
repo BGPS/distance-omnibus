@@ -1,6 +1,6 @@
 ;+
 ; NAME:
-;   GAUSS2
+;   GAUSS_1
 ;
 ; AUTHOR:
 ;   Craig B. Markwardt, NASA/GSFC Code 662, Greenbelt, MD 20770
@@ -63,7 +63,7 @@
 ; are included unchanged.
 ;-
 
-FUNCTION GAUSS2, x, p, _EXTRA=extra
+FUNCTION GAUSS_1, x, p, _EXTRA=extra
 
   sz = size(x)
   if sz(sz(0)+1) EQ 5 then smax = 26D else smax = 13.
