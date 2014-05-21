@@ -262,7 +262,7 @@ PRO OMNI_GLIMPSE_EMAF, CONFFILE=cfile, CNUM_LIST=cnum_list, $
   
   ;; Get BAND 1 Images
   readcol,local.glimpse,glimpse,format='a',count=n_gl,/SILENT,comment='#'
-  g1i = where(strmatch(glimpse,'*I1*',/fold),nfn1)
+  g1i = where(strmatch(glimpse,'_misaic_I1.fits',/fold),nfn1)
   IF (nfn1 EQ 0)  THEN BEGIN
      message,'Error: File '+local.glimpse+' does not contain IRAC Band 1 '+$
              'GLIMPSE images.  Exiting.',/cont

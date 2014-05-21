@@ -156,8 +156,8 @@ PRO OMNI_GLIMPSE_STARSUB, START=start, REAR=rear, FWHM=fwhm, BDR=bdr, $
   
   ;; Get file lists
   readcol,local.glimpse,glimpse,format='a',count=n_gl,/SILENT,comment='#'
-  g4i = where(strmatch(glimpse,'*I4*',/fold),n4)
-  g1i = where(strmatch(glimpse,'*I1*',/fold),n1)
+  g4i = where(strmatch(glimpse,'*_mosaic_I4.fits',/fold),n4)
+  g1i = where(strmatch(glimpse,'*_mosaic_I1.fits',/fold),n1)
   IF (n4 EQ 0) || (n1 EQ 0)  THEN BEGIN
      message,'Error: File '+local.glimpse+' does not contain IRAC Band 4 '+$
              'and/or Band 1 GLIMPSE images.  Exiting.',/cont
