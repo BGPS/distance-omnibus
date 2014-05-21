@@ -121,6 +121,10 @@
 ;                                   input: name change and made
 ;                                   compatible with the new
 ;                                   framework.
+;       Modified: 05/21/14, TPEB -- Fixed obscure bug whereby "I1" and
+;                                   "I4" meant to pick out GLIMPSE
+;                                   Band 1 and 4 images may also pick
+;                                   out the filename path itself.
 ;
 ;-
 

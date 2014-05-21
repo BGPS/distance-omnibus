@@ -160,6 +160,10 @@
 ;       Modified: 10/22/13, TPEB -- When using with ATLASGAL, found
 ;                                   various issues when sources have
 ;                                   |b| > 0.5 deg.  Bug fixes!
+;       Modified: 05/21/14, TPEB -- Fixed obscure bug whereby "I1" and
+;                                   "I4" meant to pick out GLIMPSE
+;                                   Band 1 and 4 images may also pick
+;                                   out the filename path itself.
 ;
 ;-
 
@@ -262,7 +266,7 @@ PRO OMNI_GLIMPSE_EMAF, CONFFILE=cfile, CNUM_LIST=cnum_list, $
   
   ;; Get BAND 1 Images
   readcol,local.glimpse,glimpse,format='a',count=n_gl,/SILENT,comment='#'
-  g1i = where(strmatch(glimpse,'_misaic_I1.fits',/fold),nfn1)
+  g1i = where(strmatch(glimpse,'_mosaic_I1.fits',/fold),nfn1)
   IF (nfn1 EQ 0)  THEN BEGIN
      message,'Error: File '+local.glimpse+' does not contain IRAC Band 1 '+$
              'GLIMPSE images.  Exiting.',/cont
