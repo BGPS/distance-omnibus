@@ -121,6 +121,10 @@
 ;                                   input: name change and made
 ;                                   compatible with the new
 ;                                   framework.
+;       Modified: 05/21/14, TPEB -- Fixed obscure bug whereby "I1" and
+;                                   "I4" meant to pick out GLIMPSE
+;                                   Band 1 and 4 images may also pick
+;                                   out the filename path itself.
 ;
 ;-
 
@@ -156,8 +160,8 @@ PRO OMNI_GLIMPSE_STARSUB, START=start, REAR=rear, FWHM=fwhm, BDR=bdr, $
   
   ;; Get file lists
   readcol,local.glimpse,glimpse,format='a',count=n_gl,/SILENT,comment='#'
-  g4i = where(strmatch(glimpse,'*I4*',/fold),n4)
-  g1i = where(strmatch(glimpse,'*I1*',/fold),n1)
+  g4i = where(strmatch(glimpse,'*_mosaic_I4.fits',/fold),n4)
+  g1i = where(strmatch(glimpse,'*_mosaic_I1.fits',/fold),n1)
   IF (n4 EQ 0) || (n1 EQ 0)  THEN BEGIN
      message,'Error: File '+local.glimpse+' does not contain IRAC Band 4 '+$
              'and/or Band 1 GLIMPSE images.  Exiting.',/cont

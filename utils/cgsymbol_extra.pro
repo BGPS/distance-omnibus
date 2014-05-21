@@ -220,7 +220,7 @@ END ; --------------------------------------------------------------------------
 ;        If this keyword is set, the function returns the Unicode value for the symbol.
 ;          
 ;-
-FUNCTION cgSymbol, symbol, CAPITAL=capital, EXAMPLE=example, PS=PS, UNICODE=unicode
+FUNCTION cgSymbol_extra, symbol, CAPITAL=capital, EXAMPLE=example, PS=PS, UNICODE=unicode
 
     Compile_Opt idl2
     
