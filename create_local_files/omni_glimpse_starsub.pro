@@ -125,6 +125,9 @@
 ;                                   "I4" meant to pick out GLIMPSE
 ;                                   Band 1 and 4 images may also pick
 ;                                   out the filename path itself.
+;       Modified: 05/22/14, TPEB -- Added more useful and helpful
+;                                   error messages on problems with
+;                                   GLIMPSE images.
 ;
 ;-
 
@@ -168,9 +171,14 @@ PRO OMNI_GLIMPSE_STARSUB, START=start, REAR=rear, FWHM=fwhm, BDR=bdr, $
      RETURN
   ENDIF
   IF (n4 NE n1) THEN BEGIN
-     message,'Error: Mismatch between Band 1 and Band 4 lists.  Exiting.',/cont
-     RETURN
+     message,'ERROR:  Mismatch between BAND 1 images and BAND 4 images.  I '+$
+             'think I found '+string(n1,format="(I0)")+' BAND 1 images and '+$
+             string(n4,format="(I0)")+' BAND 4 images.  Please check the '+$
+             'directory containing the GLIMPSE images and/or the file '+$
+             local.glimpse+' and re-run this routine.'
   ENDIF
+  
+  print,n1,n4
   
   fn4 = glimpse[g4i]
   fn1 = glimpse[g1i]

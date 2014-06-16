@@ -52,6 +52,9 @@
 ;                                   for lines that don't go all
 ;                                   the way.  Add COMPILE_OPT
 ;                                   command.
+;       Modified: 05/29/14, TPEB -- Force all RANGE variable to be
+;                                   DOUBLE; this avoids issues with
+;                                   /LOG.
 ;-
 
 PRO VLINE, x, HORIZ=horiz, LOG=log, XLOG=xlog, YLOG=ylog, YRANGE=yrange, $
@@ -64,8 +67,8 @@ PRO VLINE, x, HORIZ=horiz, LOG=log, XLOG=xlog, YLOG=ylog, YRANGE=yrange, $
      ylog = 1b
   ENDIF
   
-  xr = n_elements(xrange) ? xrange : !x.crange
-  yr = n_elements(yrange) ? yrange : !y.crange
+  xr = n_elements(xrange) ? double(xrange) : double(!x.crange)
+  yr = n_elements(yrange) ? double(yrange) : double(!y.crange)
   
   IF KEYWORD_SET(xlog) THEN xr = 10^(xr)
   IF KEYWORD_SET(ylog) THEN yr = 10^(yr)

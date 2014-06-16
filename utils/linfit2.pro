@@ -157,7 +157,7 @@ COMPILE_OPT IDL2, LOGICAL_PREDICATE
     ;; print,sx,sy
   endelse
 
-  st2 = TOTAL(t^2, DOUBLE=double, /NAN)
+  st2 = TOTAL(t*t, DOUBLE=double, /NAN)
   IF (NOT double) THEN BEGIN
 	ss = FLOAT(ss)
 	sx = FLOAT(sx)
@@ -174,7 +174,7 @@ COMPILE_OPT IDL2, LOGICAL_PREDICATE
   sdeva = SQRT((1.0 + sx * sx / (ss * st2)) / ss)
   sdevb = SQRT(1.0 / st2)
   covar = -sx/(ss*st2)
-  covar = [[sdeva^2, covar], [covar, sdevb^2]]
+  covar = [[sdeva*sdeva, covar], [covar, sdevb*sdevb]]
 
   yfit = b*x + a
 
