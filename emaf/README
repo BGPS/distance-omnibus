@@ -1,7 +1,15 @@
-Last Updated: 2014-Apr-15
+###========== README ==========###
 
-The emaf/ directory contains the routines related to the EMAF prior DPDF, as
-described in Ellsworth-Bowers et al. (2013, ApJ, 770, 39; EB13).
+This README is for the emaf/ directory of the distance-omnibus code repository.
+These routines compute quantities related to the EMAF prior DPDF, as described 
+in Ellsworth-Bowers et al. (2013, ApJ, 770, 39; EB13).
+
+There are two classes of routines in this directory: use routines, and
+autonomous routines.  The former may be run by the user to produce ancillary
+output for verification, but the autonomous routines are called by higher-level
+routines in the repository, and should not, generally, need to be called by the
+user.
+
 
 User Routines:
 -------------------------
@@ -11,7 +19,7 @@ omni_mir_examine.pro   -- Creates the PostScript figures required for a by-eye
 			  has not been created, distance_omnibus.pro will exit
 			  with a notice to follow this step.
 
-			  ** Important **
+			  *** Important ***
 			  Upon completion of the by-eye examination, create a
 			  text file in the local/ directory containing the
 			  catalog numbers of the sources not meeting the
@@ -33,5 +41,11 @@ omni_emaf_morph.pro    -- Performs the morphological matching between a SURVEY
 			  
 Data Files:
 -------------------------
-irdc_full_data.sav
-irdc_full_data.README
+irdc_full_data.sav     -- IDL save file containing the Peretto & Fuller (2009,
+		       	  A&A, 505,405) IRDC catalog.  This was required for
+			  earlier implementations of distance-omnibus, but are
+			  provided here for future development, as desired.
+irdc_full_data.README  -- README describing the above file.
+
+
+Last Updated: 06/20/14, TPEB

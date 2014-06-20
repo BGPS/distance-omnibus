@@ -1,12 +1,37 @@
-Last Updated: 2014-Mar-13
+###========== README ==========###
 
-The utils/ directory contains helpful general utilities that are neither
-specific to the distance-omnibus code base nor are found in the required
-external libraries (see root directory README).  Some of these utilities were
-written intially for distance-omnibus and others were gathered from elsewhere
-but used by the principal routines in this repository.
+This README is for the utils/ directory of the distance-omnibus code repository.
+These routines are general-purpose utility routines that are neither specific 
+to the distance-omnibus code base nor are found in the required external 
+libraries.  Some of these utilities were written intially for distance-omnibus 
+and others were gathered from elsewhere but used by the principal routines in 
+this repository.
 
-Directory contents:
+A description of the routines contained herein is not supplied, but feel free
+to browse the file headers to figure out what each one does.
 
 
-######## NEEDS MUCH UPDATING!!! ########
+###****************************###
+In addition to these routines, the following EXTERNAL LIBRARIES are required:
+
+These libraries must be installed on the local machine and their paths included 
+in the IDL path. The distance-omnibus code assumes you have a version of these 
+libraries no older than the version current as of the distance-omnibus release date.
+
+    IDLASTRO -- The IDL Astronomy User's Library
+    	     (http://idlastro.gsfc.nasa.gov/) or 
+    	     (https://github.com/wlandsman/IDLAstro)
+
+    The Coyote Graphics System -- Device-independent plotting routines
+    	     (http://www.idlcoyote.com/idldoc/cg/index.html) or 
+	     (https://code.google.com/p/idl-coyote/)
+
+    The Markwardt IDL Library -- Library of curve-fitting and other routines
+    	     (http://www.physics.wisc.edu/~craigm/idl/)
+
+
+
+
+
+
+Last Updated: 06/20/14, TPEB
