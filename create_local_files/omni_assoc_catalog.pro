@@ -77,6 +77,12 @@
 ;                                   create the SURVEY structure.
 ;       Modified: 06/30/14, TPEB -- Add check for appropriate IDL
 ;                                   version.
+;       Modified: 06/30/14, TPEB -- Convert storage of map information
+;                                   from individual named variables
+;                                   into lists (requires IDL 8.0+).
+;                                   Also, tabulate number of pixels in
+;                                   each source, and the peak flux
+;                                   density pixel value.
 ;
 ;-
 
@@ -148,7 +154,9 @@ PRO OMNI_ASSOC_CATALOG, CONFFILE=cfile, START=start
             ypos:0L,$
             labval:0L,$
             glon:0.d,$
-            glat:0.d}
+            glat:0.d,$
+            npix:0L,$
+            maxflux:0.d}
   IF conf.hasnoise && conf.haslabel THEN $
      struct = create_struct(struct,'noise',0.d)
   survey = replicate(struct, ncat)
@@ -169,53 +177,63 @@ PRO OMNI_ASSOC_CATALOG, CONFFILE=cfile, START=start
                         b:[0.d,0.d]}, n_map)
   
   message,'Reading map data into memory...',/inf
-  FOR j=0, n_map-1 DO BEGIN
+  
+  ;; Create empty lists to contain the appropriate information
+  maps   = list(!null)
+  labels = list(!null)
+  noises = list(!null)
+  astrs  = list(!null)
+  lhds   = list(!null)
+  nhds   = list(!null)
+  
+  ;; Loop though files
+  FOR jj=0, n_map-1 DO BEGIN
+     
      ;; Read in map data & label map (if available) for use later
-     jst = string(j,format="(I0)")
-     command = 'map'+jst+' = readfits(survey_maps[j],hdr,/SILENT)'
-     errcode = Execute(command)
+     maps.add, readfits(survey_maps[jj],hdr,/SILENT), jj
+     
      IF conf.haslabel THEN BEGIN
-        command = 'label'+jst+' = readfits(survey_label[j],lhd'+jst+',/SILENT)'
-        errcode = Execute(command)
+        labels.add, readfits(survey_label[jj],lhd,/SILENT), jj
+        lhds.add, lhd, jj
      ENDIF
+     
      IF conf.hasnoise THEN BEGIN
-        command = 'noise'+jst+' = readfits(survey_noise[j],nhd'+jst+',/SILENT)'
-        errcode = Execute(command)
+        noises.add, readfits(survey_noise[jj],nhd,/SILENT), jj
+        nhds.add, nhd, jj
      ENDIF
      
      ;; Create an ASTR structure
      extast,hdr,astr
      
-     mapdata[j].fn    = survey_maps[j]
-     mapdata[j].naxis = astr.naxis
+     mapdata[jj].fn    = survey_maps[jj]
+     mapdata[jj].naxis = astr.naxis
      
      ;; Check if we have CROP boundaries.  If so, use these in
      ;;   mapdata, else compute from the headers
      IF conf.hascrop THEN BEGIN
         
-        mapdata[j].l = [lmin[j],lmax[j]]
-        mapdata[j].b = [bmin[j],bmax[j]]
+        mapdata[jj].l = [lmin[jj],lmax[jj]]
+        mapdata[jj].b = [bmin[jj],bmax[jj]]
         
         ;; Check for tiles spanning l=0
-        IF mapdata[j].l[1] - mapdata[j].l[0] GE 300 THEN BEGIN
-           mapdata[j].l = [mapdata[j].l[1],mapdata[j].l[0]] ; Reverse
-           mapdata[j].l[0] -= 360.                          ; Negative lower
+        IF mapdata[jj].l[1] - mapdata[jj].l[0] GE 300 THEN BEGIN
+           mapdata[jj].l = [mapdata[jj].l[1],mapdata[jj].l[0]] ; Reverse
+           mapdata[jj].l[0] -= 360.                            ; Negative lower
         ENDIF           
         
      ENDIF ELSE BEGIN
         xval = (findgen(astr.naxis[0])-astr.crpix[0])*astr.cd[0,0]+astr.crval[0]
         yval = (findgen(astr.naxis[1])-astr.crpix[1])*astr.cd[1,1]+astr.crval[1]
         
-        mapdata[j].l     = minmax(xval)
-        mapdata[j].b     = minmax(yval)
+        mapdata[jj].l     = minmax(xval)
+        mapdata[jj].b     = minmax(yval)
         
      ENDELSE
      ;; Save ASTR structure for each map to be used later
-     command = string(j,format="('astr',I0,' = astr')")
-     errcode = Execute(command)
+     astrs.add, astr, jj
      
      ;; Keep memory clear
-     undefine,xval,yval,hdr,astr
+     undefine,xval,yval,hdr,astr,nhd,lhd
      
   ENDFOR
   
@@ -223,31 +241,31 @@ PRO OMNI_ASSOC_CATALOG, CONFFILE=cfile, START=start
   ;;===================================================================
   ;; Loop through each survey source, and fill in the survey structure.
   message,'Looping through catalog sources...',/inf
-  FOR i=start, ncat-1 DO BEGIN
+  FOR ii=start, ncat-1 DO BEGIN
      
      ;; Check this object's position against the mapdata
      ;;   structure, with cases for glon near 0 deg.
-     hit = WHERE( s[i].glon GE mapdata.l[0] AND $
-                  s[i].glon LE mapdata.l[1] AND $
-                  s[i].glat GE mapdata.b[0] AND $
-                  s[i].glat LE mapdata.b[1], nhit )
-     s[i].glon -= 360.
-     hitm = WHERE( s[i].glon GE mapdata.l[0] AND $
-                   s[i].glon LE mapdata.l[1] AND $
-                   s[i].glat GE mapdata.b[0] AND $
-                   s[i].glat LE mapdata.b[1], nhitm )
-     s[i].glon += 720.
-     hitp = WHERE( s[i].glon GE mapdata.l[0] AND $
-                   s[i].glon LE mapdata.l[1] AND $
-                   s[i].glat GE mapdata.b[0] AND $
-                   s[i].glat LE mapdata.b[1], nhitp )
-     s[i].glon -= 360.
+     hit = WHERE( s[ii].glon GE mapdata.l[0] AND $
+                  s[ii].glon LE mapdata.l[1] AND $
+                  s[ii].glat GE mapdata.b[0] AND $
+                  s[ii].glat LE mapdata.b[1], nhit )
+     s[ii].glon -= 360.
+     hitm = WHERE( s[ii].glon GE mapdata.l[0] AND $
+                   s[ii].glon LE mapdata.l[1] AND $
+                   s[ii].glat GE mapdata.b[0] AND $
+                   s[ii].glat LE mapdata.b[1], nhitm )
+     s[ii].glon += 720.
+     hitp = WHERE( s[ii].glon GE mapdata.l[0] AND $
+                   s[ii].glon LE mapdata.l[1] AND $
+                   s[ii].glat GE mapdata.b[0] AND $
+                   s[ii].glat LE mapdata.b[1], nhitp )
+     s[ii].glon -= 360.
      
      ;; Check that we found something
      nmatch = nhit + nhitm + nhitp
      IF nmatch EQ 0 THEN BEGIN
         message,'Error: No map match for catalog #'+$
-                string(s[i].cnum,format=fmt),/inf
+                string(s[ii].cnum,format=fmt),/inf
         CONTINUE
      ENDIF
      
@@ -268,102 +286,96 @@ PRO OMNI_ASSOC_CATALOG, CONFFILE=cfile, START=start
         ;; This process is facilitated if label maps are provided
         IF conf.haslabel THEN BEGIN
            
-           bestj = -1
+           bestjj = -1
            ;; Loop through the label maps, run adxy, check for non-zero
            ;;   value at location of peak flux density.
            FOR ll=0,nmatch-1 DO BEGIN
-              j = hits[ll]
-              jst = string(j,format="(I0)")
-              command = 'adxy,lhd'+jst+',s[i].glon,s[i].glat,x,y'
-              errcode = Execute(command)
+              jj = hits[ll]
+              adxy,lhds[jj],s[ii].glon,s[ii].glat,x,y
               x = long(round(x))
               y = long(round(y))
-              IF( x LT 0 || x GE mapdata[j].naxis[0] ) THEN CONTINUE
-              IF( y LT 0 || y GE mapdata[j].naxis[1] ) THEN CONTINUE
-              command = 'val = label'+jst+'[x,y]'
-              errcode = Execute(command)
-              IF errcode NE 1 THEN STOP
-              IF val NE 0 THEN bestj = j
+              IF( x LT 0 || x GE mapdata[jj].naxis[0] ) THEN CONTINUE
+              IF( y LT 0 || y GE mapdata[jj].naxis[1] ) THEN CONTINUE
+              val = (labels[jj])[x,y]
+              IF val NE 0 THEN bestjj = jj
            ENDFOR  
-           j = bestj
+           jj = bestjj
         ENDIF ELSE BEGIN
            ;; Else, this is a little messier
            
            ;; Loop through the data maps, run ad2xy, check for finite
            ;;   data value at the location of peak flux density
-           bestj = -1
+           bestjj = -1
            bestx = 0
            FOR ll=0,nmatch-1 DO BEGIN
-              j = hits[ll]
-              jst = string(j,format="(I0)")
-              command = 'ad2xy,s[i].glon,s[i].glat,astr'+jst+',x,y'
-              errcode = Execute(command)
-              IF( x LT 0 || x GE mapdata[j].naxis[0] ) THEN CONTINUE
+              jj = hits[ll]
+              ad2xy,s[ii].glon,s[ii].glat,astrs[jj],x,y
+              IF( x LT 0 || x GE mapdata[jj].naxis[0] ) THEN CONTINUE
               
               ;; Check that there are no NaNs within the vicinity of
               ;;   this location in the map  (5x5 box)
-              xb = ((long(round(x)) + [-2,2]) > 0) < (mapdata[j].naxis[0]-1)
-              yb = ((long(round(y)) + [-2,2]) > 0) < (mapdata[j].naxis[1]-1)
-              command = 'val = map'+jst+'[xb[0]:xb[1],yb[0]:yb[1]]'
-              errcode = Execute(command)
+              xb = ((long(round(x)) + [-2,2]) > 0) < (mapdata[jj].naxis[0]-1)
+              yb = ((long(round(y)) + [-2,2]) > 0) < (mapdata[jj].naxis[1]-1)
+              val = (maps[jj])[xb[0]:xb[1],yb[0]:yb[1]]
               IF fix(total(~finite(val))) THEN CONTINUE
               
               ;; Select the map for which this point lies farthest from
               ;;   the edge.  ----- NOT RIGHT METRIC!!!1!
-              xedge = long(round(abs(x) < abs(mapdata[j].naxis[0]-x-1)))
+              xedge = long(round(abs(x) < abs(mapdata[jj].naxis[0]-x-1)))
               IF xedge GT bestx THEN BEGIN
                  bestx = xedge
-                 bestj = j
+                 bestjj = jj
               ENDIF
            ENDFOR
-           j = bestj
+           jj = bestjj
         ENDELSE
-     ENDIF ELSE j = hits        ; End of the nmatch > 1 checking section
+     ENDIF ELSE jj = hits       ; End of the nmatch > 1 checking section
      ;;===================================================================
      
      
+     jj = jj[0]                 ; Make scalar, else all goes to hell.
      
      ;;=======================================================
      ;; Get the survey image mapname, and place in structure
      ;; Get the peak position of the survey source in the image
-     jst = string(j,format="(I0)")
-     command = 'ad2xy,s[i].glon,s[i].glat,astr'+jst+',x,y'
-     errcode = Execute(command)
+     ad2xy,s[ii].glon,s[ii].glat,astrs[jj],x,y
      
-     x = (long(round(x)))[0] ; SCALAR!
-     y = (long(round(y)))[0] ; SCALAR!
+     x = (long(round(x)))[0]    ; SCALAR!
+     y = (long(round(y)))[0]    ; SCALAR!
      
-     IF( x LT 0 || x GE mapdata[j].naxis[0] ) THEN BEGIN
-        print,'Catalog #'+string(survey[i].cnum,format=fmt)+$
+     ;; If X is outside the map (shouldn't happen), then
+     ;;   continue to next object...
+     IF( x LT 0 || x GE mapdata[jj].naxis[0] ) THEN BEGIN
+        print,'Catalog #'+string(survey[ii].cnum,format=fmt)+$
               '  WARNING!!!  XPOS: '+string(x,format="(I0)")
-     ENDIF ELSE BEGIN
-        survey[i].mapname  = $
-           strmid(survey_maps[j],strpos(survey_maps[j],'/',/REVERSE_SEARCH)+1)
-        IF conf.haslabel THEN $
-           survey[i].labelname = $
-           strmid(survey_label[j],strpos(survey_label[j],'/',/REVERSE_SEARCH)+1)
-        IF conf.hassmooth THEN $
-           survey[i].smooname = $
-           strmid(survey_smoo[j],strpos(survey_smoo[j],'/',/REVERSE_SEARCH)+1)
-        survey[i].xpos = x
-        survey[i].ypos = y
-        
-        command = 'survey[i].labval = label'+jst+'[x,y]'
-        errcode = Execute(command)
+        CONTINUE
+     ENDIF
+     
+     ;; Load up the SURVEY structure with the relevant information
+     survey[ii].mapname = $
+        strmid(survey_maps[jj],strpos(survey_maps[jj],'/',/REVERSE_SEARCH)+1)
+     IF conf.haslabel THEN $
+        survey[ii].labelname = $
+        strmid(survey_label[jj],strpos(survey_label[jj],'/',/REVERSE_SEARCH)+1)
+     IF conf.hassmooth THEN $
+        survey[ii].smooname = $
+        strmid(survey_smoo[jj],strpos(survey_smoo[jj],'/',/REVERSE_SEARCH)+1)
+     survey[ii].xpos = x
+     survey[ii].ypos = y
+     
+     IF conf.haslabel THEN BEGIN
+        survey[ii].labval = (labels[jj])[x,y]                ; Set LABVAL
+        isource = where(labels[jj] EQ survey[ii].labval,nxy) ; Find pixels
+        survey[ii].npix = nxy                                ; Record NPIX
+        survey[ii].maxflux = max((maps[jj])[isource])        ; Record MAXFLUX
         
         ;; Compute mean of noise map within label contour
-        IF conf.hasnoise && conf.haslabel THEN BEGIN
-           command = 'ind = where(label'+jst+' EQ survey[i].labval,nxy)'
-           errcode = Execute(command)
-           command = 'survey[i].noise = mean(noise'+jst+'[ind])'
-           errcode = Execute(command)
-        ENDIF
-     ENDELSE
+        IF conf.hasnoise THEN $
+           survey[ii].noise = mean((noises[jj])[isource])
+     ENDIF
      
-     ;; IF count NE 1 THEN $
-     ;;    message,string(survey[i].cnum,count,format=$
-     ;;                   "('Catalog #',I4,' has ',I0,' matches!')"),/inf
-  ENDFOR
+      
+  ENDFOR                        ; End of source loop
   
   ;; Save all this to disk for later joy
   survey_info = conf
