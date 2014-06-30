@@ -89,13 +89,16 @@
 ;                                   configuration structures.
 ;       Modified: 06/03/13, TPEB -- Made fully compliant with NOPARAMS
 ;                                   output from EXTAST.
-;
+;       Modified: 06/30/14, TPEB -- Add check for appropriate IDL
+;                                   version.
+;;
 ;-
 
 PRO OMNI_GLIMPSE_POSTAGE, CONFFILE=cfile, PLOT=plot, START=start, $
                           REAR=rear, CNUM_LIST = cnum_list
   
   COMPILE_OPT IDL2, LOGICAL_PREDICATE
+  omni_check_version            ; Check for an appropriate IDL version
   
   COMMON OMNI_CONFIG, conf, mw, local, dpdfs, ancil, fmt, conffile
   

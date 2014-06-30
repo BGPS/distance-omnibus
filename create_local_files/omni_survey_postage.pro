@@ -101,6 +101,8 @@
 ;                                   at coordinates.
 ;       Modified: 08/01/13, TPEB -- Spruced up the "Working..." output
 ;                                   to be prettier.
+;       Modified: 06/30/14, TPEB -- Add check for appropriate IDL
+;                                   version.
 ;
 ;-
 
@@ -108,6 +110,7 @@ PRO OMNI_SURVEY_POSTAGE, CONFFILE=cfile, START=start, REAR=rear, $
                          CNUM_LIST = cnum_list, PLOT=plot
   
   COMPILE_OPT IDL2, LOGICAL_PREDICATE
+  omni_check_version            ; Check for an appropriate IDL version
   
   COMMON OMNI_CONFIG, conf, mw, local, dpdfs, ancil, fmt, conffile
   

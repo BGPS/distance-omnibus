@@ -109,12 +109,15 @@
 ;       Modified: 05/09/14, TPEB -- Add check for SURVEY map_locaitons
 ;                                   save file... run
 ;                                   OMNI_ASSOC_CATALOG if not present.
+;       Modified: 06/30/14, TPEB -- Add check for appropriate IDL
+;                                   version.
 ;
 ;-
 
 PRO OMNI_IMPORT_VELOCITY, CONFFILE=cfile, VERBOSE=verbose, NOGRSFILT=nogrsfilt
   
   COMPILE_OPT IDL2, LOGICAL_PREDICATE
+  omni_check_version            ; Check for an appropriate IDL version
   
   COMMON OMNI_CONFIG, conf, mw, local, dpdfs, ancil, fmt, conffile
   COMMON GRS_BLOCK, grs, grsexist, v_std

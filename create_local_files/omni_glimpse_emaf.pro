@@ -167,6 +167,8 @@
 ;       Modified: 05/22/14, TPEB -- Added more useful and helpful
 ;                                   error messages on problems with
 ;                                   GLIMPSE images.
+;       Modified: 06/30/14, TPEB -- Add check for appropriate IDL
+;                                   version.
 ;
 ;-
 
@@ -175,6 +177,7 @@ PRO OMNI_GLIMPSE_EMAF, CONFFILE=cfile, CNUM_LIST=cnum_list, $
                        TEST=test, IFACT=ifact, IMIR_STATS=imir_stats
   
   COMPILE_OPT IDL2, LOGICAL_PREDICATE
+  omni_check_version            ; Check for an appropriate IDL version
   
   COMMON OMNI_CONFIG, conf, mw, local, dpdfs, ancil, fmt, conffile
   

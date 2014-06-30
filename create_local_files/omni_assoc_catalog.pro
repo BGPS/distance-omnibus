@@ -75,12 +75,15 @@
 ;                                   survey_info to encode such
 ;                                   information as the catalog used to
 ;                                   create the SURVEY structure.
+;       Modified: 06/30/14, TPEB -- Add check for appropriate IDL
+;                                   version.
 ;
 ;-
 
 PRO OMNI_ASSOC_CATALOG, CONFFILE=cfile, START=start
   
   COMPILE_OPT IDL2, LOGICAL_PREDICATE
+  omni_check_version            ; Check for an appropriate IDL version
   
   COMMON OMNI_CONFIG, conf, mw, local, dpdfs, ancil, fmt, conffile
   
