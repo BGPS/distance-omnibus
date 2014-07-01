@@ -165,8 +165,6 @@ PRO OMNI_ASSOC_CATALOG, CONFFILE=cfile, START=start
   survey.cnum = s.cnum
   survey.glon = s.glon
   survey.glat = s.glat
-  q = '"'
-  
   
   ;; For matching survey sources to map mosaics, read in the FITS
   ;;   headers of the maps, and populate a structure with GLON and
