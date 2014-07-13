@@ -33,8 +33,9 @@
 ;                    last entry in the catalog.
 ;
 ; KEYWORD PARAMETERS:
-;       /PLOT   -- Display plots to screen rather than writing .FITS
+;       PLOT    -- Display plots to screen rather than writing .FITS
 ;                  files.  Only use for diagnostic purposes.
+;       VERBOSE -- Speak excessively.
 ;
 ; OUTPUTS:
 ;       Writes FITS file for each catalog source to the directory
@@ -101,19 +102,27 @@
 ;                                   at coordinates.
 ;       Modified: 08/01/13, TPEB -- Spruced up the "Working..." output
 ;                                   to be prettier.
+;       Modified: 06/30/14, TPEB -- Add check for appropriate IDL
+;                                   version.
+;       Modified: 07/01/14, TPEB -- Convert storage of map information
+;                                   from individual named variables
+;                                   into lists (requires IDL 8.0+).
+;                                   Add VERBOSE keyword.
 ;
 ;-
 
 PRO OMNI_SURVEY_POSTAGE, CONFFILE=cfile, START=start, REAR=rear, $
-                         CNUM_LIST = cnum_list, PLOT=plot
+                         CNUM_LIST = cnum_list, PLOT=plot, VERBOSE=verbose
   
   COMPILE_OPT IDL2, LOGICAL_PREDICATE
+  omni_check_version            ; Check for an appropriate IDL version
   
   COMMON OMNI_CONFIG, conf, mw, local, dpdfs, ancil, fmt, conffile
   
   ;; Parse keyword parameters
-  plot = KEYWORD_SET(plot)
-  
+  plot   = KEYWORD_SET(plot)
+  silent = ~KEYWORD_SET(verbose)
+
   ;; Read in the configuration file
   conf = omni_load_conf(cfile)
   IF conf.error THEN BEGIN
@@ -190,76 +199,78 @@ PRO OMNI_SURVEY_POSTAGE, CONFFILE=cfile, START=start, REAR=rear, $
      RETURN
   ENDIF
   
-  q = '"'    ; Needed for command/Execute pairs
   ;; Read the map images & headers to memory (for faster processing)
-  FOR j=0L, n_label-1 DO BEGIN
+  message,'Reading map data into memory...',/inf
+  
+  ;; Create empty lists to contain the appropriate information
+  images  = list(!null)
+  hdrs    = list(!null)
+  labels  = list(!null)
+  lhds    = list(!null)
+  smooths = list(!null)
+  shds    = list(!null)
+  
+  ;; Loop through the files
+  FOR jj=0L, n_label-1 DO BEGIN
      
-     command = string(j,q,survey_maps[j],q,j,format=$
-                      "('image',I0,' = readfits(',A0,A0,A0,',hdr',I0,')')")
-     errcode = Execute(command)
-     mapname[j] = strmid(survey_maps[j],$
-                         strpos(survey_maps[j],'/',/reverse_search)+1)
+     images.add, readfits(survey_maps[jj], hdr, SILENT=silent), jj
+     hdrs.add, hdr, jj
+     mapname[jj] = strmid(survey_maps[jj],$
+                          strpos(survey_maps[jj],'/',/reverse_search)+1)
      
      IF conf.haslabel THEN BEGIN
-        command = string(j,q,survey_label[j],q,j,format=$
-                         "('label',I0,' = readfits(',A0,A0,A0,',lhdr',I0,')')")
-        errcode = Execute(command)
-        labname[j] = strmid(survey_label[j],$
-                            strpos(survey_label[j],'/',/reverse_search)+1)
+        labels.add, readfits(survey_label[jj], lhdr, SILENT=silent), jj
+        lhds.add, lhdr, jj
+        labname[jj] = strmid(survey_label[jj],$
+                             strpos(survey_label[jj],'/',/reverse_search)+1)
      ENDIF
      
      IF conf.hassmooth THEN BEGIN
-        command = string(j,q,survey_smoo[j],q,j,format=$
-                         "('smooth',I0,' = readfits(',A0,A0,A0,',shdr',I0,')')")
-        errcode = Execute(command)
-        smoname[j] = strmid(survey_smoo[j],$
-                            strpos(survey_smoo[j],'/',/reverse_search)+1)
+        smooths.add, readfits(survey_smoo[jj], shdr, SILENT=silent), jj
+        shds.add, shdr, jj
+        smoname[jj] = strmid(survey_smoo[jj],$
+                            strpos(survey_smoo[jj],'/',/reverse_search)+1)
      ENDIF
      
-  ENDFOR
+  ENDFOR                        ; End of file loop
   
   
   ;;Loop through SURVEY sources
-  lastj = -1                    ; Used to keep track of previous map image
-  FOR i=start, rear DO BEGIN
+  lastjj = -1                    ; Used to keep track of previous map image
+  FOR ii=start, rear DO BEGIN
      
-     IF (i+1) MOD 500 EQ 0 THEN $
+     IF (ii+1) MOD 500 EQ 0 THEN $
         message,'Working '+conf.survey+' object #'+$
-                string(s[i].cnum,format='('+fmt2+')'),/inf
+                string(s[ii].cnum,format='('+fmt2+')'),/inf
      
      ;; Get image index # for extraction
-     j = WHERE(mapname EQ survey[i].mapname, nj)
+     jj = ( where( mapname EQ survey[ii].mapname, njj ) )[0] ; SCALAR!
      
      ;; Speed up processing by using settings from previous loop, if possible
-     IF (j NE lastj) THEN BEGIN
+     IF (jj NE lastjj) THEN BEGIN
         
         ;; Map Data
-        command = string(j,format="('image = image',I0)")
-        errcode = Execute(command)
-        command = string(j,format="('hdr = hdr',I0)")
-        errcode = Execute(command)
+        image = images[jj]
+        hdr   = hdrs[jj]
         
         IF conf.haslabel THEN BEGIN
-           command = string(j,format="('label = label',I0)")
-           errcode = Execute(command)
-           command = string(j,format="('lhdr = lhdr',I0)")
-           errcode = Execute(command)
+           label = labels[jj]
+           lhdr  = lhds[jj]
         ENDIF
         
         IF conf.hassmooth THEN BEGIN
-           command = string(j,format="('smooth = smooth',I0)")
-           errcode = Execute(command)
-           command = string(j,format="('shdr = shdr',I0)")
-           errcode = Execute(command)
+           smooth = smooths[jj]
+           shdr   = shds[jj]
         ENDIF        
         
+        help,hdr,lhdr,shdr,jj
         ;; Check the FITS header for the correct value of PPBEAM, and
         ;;    write the corrected value to disk, if necessary. 
         IF conf.ppbeam NE 0 THEN $
            IF omni_check_ppbeam(hdr,conf) THEN $
-              writefits,survey_maps[j],image,hdr
+              writefits,survey_maps[jj],image,hdr
         
-        IF plot THEN plotmap,image,hdr,tit=survey[i].mapname
+        IF plot THEN plotmap,image,hdr,tit=survey[ii].mapname
         
         ;; Calculate the radius in pixels required for the box size
         ;;   specified by SIZE.
@@ -269,28 +280,28 @@ PRO OMNI_SURVEY_POSTAGE, CONFFILE=cfile, START=start, REAR=rear, $
            3: pixscale = abs(astr.cdelt[0])*3600.
            2: pixscale = abs(astr.cd[0,0]) * 3600.
            ELSE: message,'Error: Astrometry information for '+$
-                         survey[i].mapname+' is not useable!'
+                         survey[ii].mapname+' is not useable!'
         ENDCASE
         radius = long(round(size * 60. / pixscale / 2.))
         
         ;; Record which of survey_maps this is for the next loop
-        lastj = j
+        lastjj = jj
      ENDIF
      
      ;; Define subsection parameters for this SURVEY source
      ;; Determine box corners for postage stamp extraction, staying
      ;;   within image bounds
      imgsz = size(image,/DIM)
-     box   = [ (survey[i].xpos - radius) > 0, $
-               (survey[i].xpos + radius) < (imgsz[0]-1), $
-               (survey[i].ypos - radius) > 0, $
-               (survey[i].ypos + radius) < (imgsz[1]-1) ]
+     box   = [ (survey[ii].xpos - radius) > 0, $
+               (survey[ii].xpos + radius) < (imgsz[0]-1), $
+               (survey[ii].ypos - radius) > 0, $
+               (survey[ii].ypos + radius) < (imgsz[1]-1) ]
      
      ;; Check for catalog source lying outside the bounds (for
      ;; generalization of the code) -- skip to next source.
-     IF (survey[i].xpos LT 0) || (survey[i].ypos LT 0) || $
-        (survey[i].xpos GT (imgsz[0]-1)) || $
-        survey[i].ypos GT (imgsz[1]-1) THEN CONTINUE
+     IF (survey[ii].xpos LT 0) || (survey[ii].ypos LT 0) || $
+        (survey[ii].xpos GT (imgsz[0]-1)) || $
+        survey[ii].ypos GT (imgsz[1]-1) THEN CONTINUE
      
      ;; Use HEXTRACT to extract the subsection and update header WCS
      hextract,image,hdr,ps,pshdr,box[0],box[1],box[2],box[3],/silent
@@ -300,8 +311,8 @@ PRO OMNI_SURVEY_POSTAGE, CONFFILE=cfile, START=start, REAR=rear, $
      ;; Make the pl image (label postage-stamp) just the source mask
      IF conf.haslabel THEN BEGIN
         hextract,label,lhdr,pl,plhdr,box[0],box[1],box[2],box[3],/silent
-        CASE label[survey[i].xpos,survey[i].ypos] GE 1 OF
-           1: pl = pl EQ label[survey[i].xpos,survey[i].ypos] ; Yes object
+        CASE label[survey[ii].xpos,survey[ii].ypos] GE 1 OF
+           1: pl = pl EQ label[survey[ii].xpos,survey[ii].ypos] ; Yes object
            0: pl = byte(pl * 0b)                              ; No object
         ENDCASE
      ENDIF
@@ -319,14 +330,14 @@ PRO OMNI_SURVEY_POSTAGE, CONFFILE=cfile, START=start, REAR=rear, $
         
         
         ;; SURVEY science image
-        psfn  = conf.survey+'_data'+string(s[i].cnum,format=fmt)+'.fits'
+        psfn  = conf.survey+'_data'+string(s[ii].cnum,format=fmt)+'.fits'
         sxaddpar, pshdr, 'DATE_PS',dte, AFTER='DATE', $
                   ' Creation UTC date of postage-stamp FITS file'
-        sxaddpar, pshdr, 'OBJNAME' ,s[i].name, AFTER='DATE_PS', $
+        sxaddpar, pshdr, 'OBJNAME' ,s[ii].name, AFTER='DATE_PS', $
                   ' '+conf.survey+' Object Name in Galactic Coordinates'
-        sxaddpar, pshdr, 'CNUM', s[i].cnum, AFTER='OBJNAME', $
+        sxaddpar, pshdr, 'CNUM', s[ii].cnum, AFTER='OBJNAME', $
                   ' '+conf.survey+' catalog number'
-        sxaddpar, pshdr, 'ORIGFILE', (mapname[j])[0], AFTER='CNUM', $
+        sxaddpar, pshdr, 'ORIGFILE', (mapname[jj])[0], AFTER='CNUM', $
                   ' Original '+conf.survey+' map'
         sxaddpar, pshdr, 'FILENAME', psfn, AFTER='ORIGFILE'
         sxaddhist, hist, pshdr
@@ -334,14 +345,14 @@ PRO OMNI_SURVEY_POSTAGE, CONFFILE=cfile, START=start, REAR=rear, $
         
         ;; SURVEY label map
         IF conf.haslabel THEN BEGIN
-           plfn  = conf.survey+'_label'+string(s[i].cnum,format=fmt)+'.fits'
+           plfn  = conf.survey+'_label'+string(s[ii].cnum,format=fmt)+'.fits'
            sxaddpar, plhdr, 'DATE_PS',dte, AFTER='DATE', $
                      ' Creation UTC date of postage-stamp FITS file'
-           sxaddpar, plhdr, 'OBJNAME' ,s[i].name, AFTER='DATE_PS', $
+           sxaddpar, plhdr, 'OBJNAME' ,s[ii].name, AFTER='DATE_PS', $
                      ' '+conf.survey+' Object Name in Galactic Coordinates'
-           sxaddpar, plhdr, 'CNUM', s[i].cnum, AFTER='OBJNAME', $
+           sxaddpar, plhdr, 'CNUM', s[ii].cnum, AFTER='OBJNAME', $
                      ' '+conf.survey+' catalog number'
-           sxaddpar, plhdr, 'ORIGFILE', (labname[j])[0], AFTER='CNUM', $
+           sxaddpar, plhdr, 'ORIGFILE', (labname[jj])[0], AFTER='CNUM', $
                      ' Original '+conf.survey+' label file'
            sxaddpar, plhdr, 'FILENAME', plfn, AFTER='ORIGFILE'
            sxaddhist, hist, plhdr
@@ -350,14 +361,14 @@ PRO OMNI_SURVEY_POSTAGE, CONFFILE=cfile, START=start, REAR=rear, $
         
         ;; Smoothed image
         IF conf.hassmooth THEN BEGIN
-           pssfn = conf.survey+'_smooth'+string(s[i].cnum,format=fmt)+'.fits'
+           pssfn = conf.survey+'_smooth'+string(s[ii].cnum,format=fmt)+'.fits'
            sxaddpar, psshdr, 'DATE_PS',dte, AFTER='DATE', $
                      ' Creation UTC date of postage-stamp FITS file'
-           sxaddpar, psshdr, 'OBJNAME' ,s[i].name, AFTER='DATE_PS', $
+           sxaddpar, psshdr, 'OBJNAME' ,s[ii].name, AFTER='DATE_PS', $
                      ' '+conf.survey+' Object Name in Galactic Coordinates'
-           sxaddpar, psshdr, 'CNUM', s[i].cnum, AFTER='OBJNAME', $
+           sxaddpar, psshdr, 'CNUM', s[ii].cnum, AFTER='OBJNAME', $
                      ' '+conf.survey+' catalog number'
-           sxaddpar, psshdr, 'ORIGFILE', (smoname[j])[0], AFTER='CNUM', $
+           sxaddpar, psshdr, 'ORIGFILE', (smoname[jj])[0], AFTER='CNUM', $
                      ' Original '+conf.survey+' smoothed image file'
            sxaddpar, psshdr, 'FILENAME', pssfn, AFTER='ORIGFILE'
            sxaddhist, hist, psshdr
@@ -366,7 +377,7 @@ PRO OMNI_SURVEY_POSTAGE, CONFFILE=cfile, START=start, REAR=rear, $
         
      ENDIF ELSE BEGIN           ; End of NOPLOT, start of PLOT
         
-        titlestr = string(s[i].cnum,s[i].glon,s[i].glat,format=$
+        titlestr = string(s[ii].cnum,s[ii].glon,s[ii].glat,format=$
                           "('SURVEY #',I4,'  l = ',F5.1,'  b = ',F5.2)")
         
         ;; Plot to screen.  Includes wait time for visual inspection
@@ -375,7 +386,7 @@ PRO OMNI_SURVEY_POSTAGE, CONFFILE=cfile, START=start, REAR=rear, $
         
         ;; Plot contours
         cgContour,pl,xc,yc,levels=[0.5],thick=3,color='yellow',/over
-        cgPlots,s[i].glon,s[i].glat,psym=2,thick=3,symsize=2,color='Lime Green'
+        cgPlots,s[ii].glon,s[ii].glat,psym=2,thick=3,symsize=2,color='Lime Green'
         
         wait,0.5
      ENDELSE

@@ -109,12 +109,18 @@
 ;       Modified: 05/09/14, TPEB -- Add check for SURVEY map_locaitons
 ;                                   save file... run
 ;                                   OMNI_ASSOC_CATALOG if not present.
+;       Modified: 06/30/14, TPEB -- Add check for appropriate IDL
+;                                   version.
+;       Modified: 06/30/14, TPEB -- Convert storage of map information
+;                                   from individual named variables
+;                                   into lists (requires IDL 8.0+).
 ;
 ;-
 
 PRO OMNI_IMPORT_VELOCITY, CONFFILE=cfile, VERBOSE=verbose, NOGRSFILT=nogrsfilt
   
   COMPILE_OPT IDL2, LOGICAL_PREDICATE
+  omni_check_version            ; Check for an appropriate IDL version
   
   COMMON OMNI_CONFIG, conf, mw, local, dpdfs, ancil, fmt, conffile
   COMMON GRS_BLOCK, grs, grsexist, v_std
@@ -170,19 +176,24 @@ PRO OMNI_IMPORT_VELOCITY, CONFFILE=cfile, VERBOSE=verbose, NOGRSFILT=nogrsfilt
                            l:[0.d,0.d],$
                            b:[0.d,0.d]}, n_map)
      
+     ;; Create empty lists to contain the appropriate information
+     maps   = list(!null)
+     labels = list(!null)
+     noises = list(!null)
+     astrs  = list(!null)
+     lhds   = list(!null)
+     nhds   = list(!null)
+     
      ;; Loop over maps     
-     FOR k=0, n_map-1 DO BEGIN
-        kst = string(k,format="(I0)")
-        command = 'label'+kst+' = readfits(survey_label[k],lhd'+kst+$
-                  ',SILENT=silent)'
-        errcode = Execute(command)
+     FOR kk=0, n_map-1 DO BEGIN
+        labels.add, readfits(survey_label[kk],lhd,SILENT=silent), kk
+        lhds.add, lhd, kk
         
         ;; Create an ASTR structure
-        command = 'extast,lhd'+kst+',astr'
-        errcode = Execute(command)
+        extast,lhd,astr
         
-        mapdata[k].fn    = survey_label[k]
-        mapdata[k].naxis = astr.naxis
+        mapdata[kk].fn    = survey_label[kk]
+        mapdata[kk].naxis = astr.naxis
         
         ;; Check if we have CROP boundaries.  If so, use these in
         ;;   mapdata, else compute from the headers.  If crop, extend
@@ -190,24 +201,23 @@ PRO OMNI_IMPORT_VELOCITY, CONFFILE=cfile, VERBOSE=verbose, NOGRSFILT=nogrsfilt
         ;;   to correct for sloppy crop bounds.
         IF conf.hascrop THEN BEGIN
            
-           mapdata[k].l = [lmin[k],lmax[k]] + [-0.01,0.01]
-           mapdata[k].b = [bmin[k],bmax[k]]
+           mapdata[kk].l = [lmin[kk],lmax[kk]] + [-0.01,0.01]
+           mapdata[kk].b = [bmin[kk],bmax[kk]]
            
            ;; Check for tiles spanning l=0
-           IF mapdata[k].l[1] - mapdata[k].l[0] GE 300 THEN BEGIN
-              mapdata[k].l = [mapdata[k].l[1],mapdata[k].l[0]] ; Reverse
-              mapdata[k].l[0] -= 360.                          ; Negative lower
+           IF mapdata[kk].l[1] - mapdata[kk].l[0] GE 300 THEN BEGIN
+              mapdata[kk].l = [mapdata[kk].l[1],mapdata[kk].l[0]] ; Reverse
+              mapdata[kk].l[0] -= 360.                          ; Negative lower
            ENDIF           
            
         ENDIF ELSE BEGIN
-           mapdata[k].l = minmax((findgen(astr.naxis[0])-astr.crpix[0])*$
+           mapdata[kk].l = minmax((findgen(astr.naxis[0])-astr.crpix[0])*$
                                  astr.cd[0,0]+astr.crval[0])
-           mapdata[k].b = minmax((findgen(astr.naxis[1])-astr.crpix[1])*$
+           mapdata[kk].b = minmax((findgen(astr.naxis[1])-astr.crpix[1])*$
                                  astr.cd[1,1]+astr.crval[1])
         ENDELSE
         ;; Save ASTR structure for each map to be used later
-        command = 'astr'+kst+' = astr'
-        errcode = Execute(command)
+        astrs.add, astr, kk
         
         ;; Keep memory clear
         undefine,lhd,astr
@@ -330,46 +340,38 @@ PRO OMNI_IMPORT_VELOCITY, CONFFILE=cfile, VERBOSE=verbose, NOGRSFILT=nogrsfilt
            ;;   which image should be used for objects with positions in
            ;;   more than one map.
            
-           IF nmatch EQ 1 THEN k = hits ELSE BEGIN
+           IF nmatch EQ 1 THEN kk = hits ELSE BEGIN
               
-              bestk = -1
+              bestkk = -1
               ;; Loop through the label maps, run adxy, check for non-zero
               ;;   value at location of peak flux density.
               FOR ll=0,nmatch-1 DO BEGIN
-                 k = (hits[ll])[0]
-                 kst = string(k,format="(I0)")
-                 command = 'ad2xy,vs[oi].l,vs[oi].b,astr'+kst+',x,y'
-                 errcode = Execute(command)
+                 kk = (hits[ll])[0]
+                 ad2xy,vs[oi].l,vs[oi].b,astrs[kk],x,y
                  x = (long(round(x)))[0] ; New ad2xy spits arrays 
                  y = (long(round(y)))[0] ; even if scalar went in
-                 IF( x LT 0 || x GE mapdata[k].naxis[0] ) THEN CONTINUE
-                 IF( y LT 0 || y GE mapdata[k].naxis[1] ) THEN CONTINUE
-                 command = 'val = label'+kst+'[x,y]'
-                 errcode = Execute(command)
-                 IF errcode NE 1 THEN STOP ; If something fucks up, stop running
-                 IF val NE 0 THEN bestk = k
+                 IF( x LT 0 || x GE mapdata[kk].naxis[0] ) THEN CONTINUE
+                 IF( y LT 0 || y GE mapdata[kk].naxis[1] ) THEN CONTINUE
+                 val = (labels[kk])[x,y]
+                 IF val NE 0 THEN bestkk = kk
               ENDFOR  
-              k = bestk
+              kk = bestkk
            ENDELSE              ; End of the nmatch > 1 checking section
            ;;===================================================================
            
            
            ;; Find aperture in the label map, and extract value(s)
-           k = k[0]
-           IF k EQ -1 THEN CONTINUE ; No survey object in more than 1 field
-           kst = string(k,format="(I0)")
-           
+           kk = kk[0]
+           IF kk EQ -1 THEN CONTINUE ; No survey object in more than 1 field
+                      
            ;; Construct the aperture based on the ASTROMETRY
-           command = 'aperture = omni_aperture_mask(junk,ap_size,'+$
-                     'vs[oi].l,vs[oi].b,ASTR=astr'+kst+')'
-           errcode = Execute(command)
-           IF ~errcode THEN print,[nmatch,hits] 
+           aperture = omni_aperture_mask(junk,ap_size,vs[oi].l,vs[oi].b,$
+                                         ASTR=astrs[kk])
            label_ind = where(aperture GT 0, nli)
            IF nli EQ 0 THEN message,'You need a stiff drink, sir.'
            
            ;; Find the UNIQUE label values within the aperture
-           command = 'values = label'+kst+'[label_ind]'
-           errcode = Execute(command)
+           values = (labels[kk])[label_ind]
            values = values[UNIQ(values, SORT(values))]
            valid_ind = where(values NE 0, nvi)
            
@@ -386,8 +388,8 @@ PRO OMNI_IMPORT_VELOCITY, CONFFILE=cfile, VERBOSE=verbose, NOGRSFILT=nogrsfilt
               
               ;; Go through SURVEY structure to find object in this field
               ;;   with the same LABVAL
-              labstr = strmid(survey_label[k],$
-                              strpos(survey_label[k],'/',/REVERSE_SEARCH)+1)
+              labstr = strmid(survey_label[kk],$
+                              strpos(survey_label[kk],'/',/REVERSE_SEARCH)+1)
               surind = where(strmatch(survey.labelname, labstr), nsur)
               fieldind = where(survey[surind].labval EQ labval)
               
