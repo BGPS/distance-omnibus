@@ -23,3 +23,39 @@ Other rotation curves may be added to the code base by writing a new routine
      ?????_rotcurve.pro, based on the model provided in clemens_rotcurve.pro.
      Additionally, code must be added to omni_vphys2vlsr.pro to specify the
      radius and circular velocity of the Solar Circle, and V(R).
+
+
+###****************************###
+
+User Routines:
+-------------------------
+kdist.pro      -- Compute kinematic distances given a (l,b,v) triad, using the
+	       	  Reid et al. rotation curve.
+
+kdist_clem.pro -- Compute kinematic distances given a (l,b,v) triad, using the
+	       	  Clemens (1985) rotation curve.
+
+kdist_iau.pro  -- Compute kinematic distances given a (l,b,v) triad, using the
+	       	  IAU Standard rotation curve.
+
+
+
+Autonomous Routines:
+-------------------------
+omni_kdist_spectrum.pro -- Computed the kinematic distance likelihood function
+			   given a spectrum and Galactic coordinates.  This
+			   routine utilizes information from the 
+			   galactic_params.conf configuration file for all
+			   physical quantities.
+
+omni_lbd2rz.pro         -- Computes Galactocentric positions given (l,b,d),
+			   using the transformation matrix from Appendix C
+			   of Ellsworth-Bowers et al. (2013, ApJ, 770, 39).
+
+omni_vphys2vlsr.pro     -- Computes the physical velocity of an object given
+			   the telescope-reported VLSR; takes into account
+			   peculiar motions and other stuff.
+
+
+
+Last Updated: 06/20/14, TPEB

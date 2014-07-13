@@ -35,7 +35,8 @@
 ;       plot device.
 ;
 ; OPTIONAL OUTPUTS:
-;       RES -- [a,b], where y = a + b*x
+;       RES   -- [a,b], where y = a + b*x
+;       COVAR -- The 2x2 covariance matrix
 ;
 ; EXAMPLE:
 ;       linfit_plot, x, y, /legend
@@ -67,11 +68,14 @@
 ;                                   Some documentation cleanup.  Also
 ;                                   add RES optional output to allow
 ;                                   return of the fit values.
+;       Modified: 06/05/14, TPEB -- Add pass-through optional output
+;                                   COVAR that comes from the linear
+;                                   fit routines.
 ;
 ;-
 
 PRO LINFIT_PLOT, x, y, LEGEND=legend, LOG=log, XLOG=xlog, YLOG=ylog, $
-                 ROBUST=robust, RES=result, _EXTRA=extra
+                 ROBUST=robust, RES=result, COVAR=covar, _EXTRA=extra
   
   ;; Parse keywords
   xlog = KEYWORD_SET(xlog)
@@ -87,7 +91,8 @@ PRO LINFIT_PLOT, x, y, LEGEND=legend, LOG=log, XLOG=xlog, YLOG=ylog, $
   xf = findgen(101) * spread / 100. + min(!x.crange)
   
   ;; Do the linear fit
-  result = KEYWORD_SET(robust) ? LADFIT(x,y,/DOUBLE) : LINFIT2(x,y)
+  result = KEYWORD_SET(robust) ? LADFIT2(x,y,/DOUBLE,COVAR=covar) : $
+           LINFIT2(x,y,/DOUBLE,COVAR=covar)
   
   IF KEYWORD_SET(xlog) THEN xf = 10.^(xf)
   yf = result[0] + result[1] * xf

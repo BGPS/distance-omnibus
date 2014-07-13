@@ -160,6 +160,15 @@
 ;       Modified: 10/22/13, TPEB -- When using with ATLASGAL, found
 ;                                   various issues when sources have
 ;                                   |b| > 0.5 deg.  Bug fixes!
+;       Modified: 05/21/14, TPEB -- Fixed obscure bug whereby "I1" and
+;                                   "I4" meant to pick out GLIMPSE
+;                                   Band 1 and 4 images may also pick
+;                                   out the filename path itself.
+;       Modified: 05/22/14, TPEB -- Added more useful and helpful
+;                                   error messages on problems with
+;                                   GLIMPSE images.
+;       Modified: 06/30/14, TPEB -- Add check for appropriate IDL
+;                                   version.
 ;
 ;-
 
@@ -168,6 +177,7 @@ PRO OMNI_GLIMPSE_EMAF, CONFFILE=cfile, CNUM_LIST=cnum_list, $
                        TEST=test, IFACT=ifact, IMIR_STATS=imir_stats
   
   COMPILE_OPT IDL2, LOGICAL_PREDICATE
+  omni_check_version            ; Check for an appropriate IDL version
   
   COMMON OMNI_CONFIG, conf, mw, local, dpdfs, ancil, fmt, conffile
   
@@ -258,27 +268,45 @@ PRO OMNI_GLIMPSE_EMAF, CONFFILE=cfile, CNUM_LIST=cnum_list, $
   ENDIF
   
   ;; Next, search for the Star-subtracted BAND 4 images, and SURVEY
-  ;;   mosaics. 
+  ;;   mosaics.  Spit useful error messages (and STOP) if anything is amiss.
   
   ;; Get BAND 1 Images
   readcol,local.glimpse,glimpse,format='a',count=n_gl,/SILENT,comment='#'
-  g1i = where(strmatch(glimpse,'*I1*',/fold),nfn1)
+  g1i = where(strmatch(glimpse,'*_mosaic_I1.fits',/fold),nfn1)
   IF (nfn1 EQ 0)  THEN BEGIN
-     message,'Error: File '+local.glimpse+' does not contain IRAC Band 1 '+$
-             'GLIMPSE images.  Exiting.',/cont
-     RETURN
+     message,'ERROR: File '+local.glimpse+' does not contain IRAC Band 1 '+$
+             'GLIMPSE images.  These images are required for computation of '+$
+             'the EMAF-based prior DPDF.  These images may be downloaded '+$
+             'from IPAC, and their locations must be placed in '+local.glimpse+$
+             '.  To run distance_omnibus without these images (and the '+$
+             'EMAF-based DPDF), deselect EMAF in conffiles/dpdf_params.conf.'
   ENDIF
   fn1 = glimpse[g1i]
   
   ;; Get star-subtracted BAND 4 Images
   GDIR = strmid(fn1[0],0,strpos(fn1[0],'/',/reverse_search)+1)
-  fn4 = FILE_SEARCH(GDIR+'starsub*.fits',            COUNT = nfn4)
+  fn4 = FILE_SEARCH(GDIR+'starsub*.fits', COUNT=nfn4)
+  
+  IF nfn4 EQ 0 THEN BEGIN
+     message,'ERROR: No star-subtracted IRAC Band 4 GLIMPSE images exist in '+$
+             'the directory containing the GLIMPSE mosaics.  If you wish to '+$
+             'compute the EMAF-based prior DPDF, it will be necessary to run '+$
+             'omni_glimpse_starsub.pro to generate these images.  Creation '+$
+             'of the star-subtracted images is a time- and CPU-intensive '+$
+             'process, and use of manual parallelization is recommended (see '+$
+             'the header of omni_glimpse_starsub.pro for details).  To run '+$
+             'distance_omnibus without these images (and the EMAF-based '+$
+             'DPDF), deselect EMAF in conffiles/dpdf_params.conf.'
+  ENDIF
   
   IF (nfn4 NE nfn1) THEN BEGIN
-     message,'Error:  Mismatch between BAND 1 images and '+$
-             'STARSUB images.  May need to run '+$
-             'omni_glimpse_starsub.pro.  Exiting',/cont
-     RETURN
+     message,'ERROR:  Mismatch between BAND 1 images and STARSUB images.  I '+$
+             'think I found '+string(nfn1,format="(I0)")+' BAND 1 images and '+$
+             string(nfn4,format="(I0)")+' STARSUB images.  Please check the '+$
+             GDIR+' directory, and re-run omni_glimpse_starsub.pro as '+$
+             'necessary.  To run distance_omnibus without these images (and '+$
+             'the EMAF-based DPDF), deselect EMAF in '+$
+             'conffiles/dpdf_params.conf.'
   ENDIF
   
   ;; Sort filename lists, just to be sure everything lines up nice.

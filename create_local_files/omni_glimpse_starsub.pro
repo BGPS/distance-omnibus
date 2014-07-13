@@ -121,6 +121,15 @@
 ;                                   input: name change and made
 ;                                   compatible with the new
 ;                                   framework.
+;       Modified: 05/21/14, TPEB -- Fixed obscure bug whereby "I1" and
+;                                   "I4" meant to pick out GLIMPSE
+;                                   Band 1 and 4 images may also pick
+;                                   out the filename path itself.
+;       Modified: 05/22/14, TPEB -- Added more useful and helpful
+;                                   error messages on problems with
+;                                   GLIMPSE images.
+;       Modified: 06/30/14, TPEB -- Add check for appropriate IDL
+;                                   version.
 ;
 ;-
 
@@ -128,6 +137,7 @@ PRO OMNI_GLIMPSE_STARSUB, START=start, REAR=rear, FWHM=fwhm, BDR=bdr, $
                           TEST=test
   
   COMPILE_OPT IDL2, LOGICAL_PREDICATE
+  omni_check_version            ; Check for an appropriate IDL version
   
   COMMON OMNI_CONFIG, conf, mw, local, dpdfs, ancil, fmt, conffile
   
@@ -156,17 +166,22 @@ PRO OMNI_GLIMPSE_STARSUB, START=start, REAR=rear, FWHM=fwhm, BDR=bdr, $
   
   ;; Get file lists
   readcol,local.glimpse,glimpse,format='a',count=n_gl,/SILENT,comment='#'
-  g4i = where(strmatch(glimpse,'*I4*',/fold),n4)
-  g1i = where(strmatch(glimpse,'*I1*',/fold),n1)
+  g4i = where(strmatch(glimpse,'*_mosaic_I4.fits',/fold),n4)
+  g1i = where(strmatch(glimpse,'*_mosaic_I1.fits',/fold),n1)
   IF (n4 EQ 0) || (n1 EQ 0)  THEN BEGIN
      message,'Error: File '+local.glimpse+' does not contain IRAC Band 4 '+$
              'and/or Band 1 GLIMPSE images.  Exiting.',/cont
      RETURN
   ENDIF
   IF (n4 NE n1) THEN BEGIN
-     message,'Error: Mismatch between Band 1 and Band 4 lists.  Exiting.',/cont
-     RETURN
+     message,'ERROR:  Mismatch between BAND 1 images and BAND 4 images.  I '+$
+             'think I found '+string(n1,format="(I0)")+' BAND 1 images and '+$
+             string(n4,format="(I0)")+' BAND 4 images.  Please check the '+$
+             'directory containing the GLIMPSE images and/or the file '+$
+             local.glimpse+' and re-run this routine.'
   ENDIF
+  
+  print,n1,n4
   
   fn4 = glimpse[g4i]
   fn1 = glimpse[g1i]

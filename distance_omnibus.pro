@@ -179,6 +179,11 @@
 ;       Modified: 05/09/14, TPEB -- Fix typos in above and add
 ;                                   CHECK_MATH() call to clear out
 ;                                   annoying "underflow" messages.
+;       Modified: 05/22/14, TPEB -- Check the output of the Execute()
+;                                   commands for prob_* and stop code
+;                                   execution if an error is detected.
+;       Modified: 06/30/14, TPEB -- Add check for appropriate IDL
+;                                   version.
 ;
 ;-
 
@@ -186,6 +191,7 @@ PRO DISTANCE_OMNIBUS, CONFFILE=cfile,CNUM_LIST=cnum_list, VERBOSE=verbose, $
                       START=start, REAR=rear, PLOT=plot, PS=ps
   
   COMPILE_OPT IDL2, LOGICAL_PREDICATE
+  omni_check_version            ; Check for an appropriate IDL version
   compat_const                  ; Check for the !CONST system variable
   
   COMMON OMNI_CONFIG, conf, mw, local, dpdfs, ancil, fmt, conffile
@@ -486,7 +492,7 @@ PRO DISTANCE_OMNIBUS, CONFFILE=cfile,CNUM_LIST=cnum_list, VERBOSE=verbose, $
      pvec[j].post = d*0.d + 1.d
      
      FOR i=0L, n_prob-1 DO BEGIN
-        errcode = Execute( prob_list[i] ) ; Run the probability!
+        IF ~Execute( prob_list[i] ) THEN STOP ; Run the probability!
         constrain[j].(i+1) = constr ; The (i+1) skips over the .CNUM element
         
         ;;**********************************************************

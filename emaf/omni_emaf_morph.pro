@@ -28,7 +28,7 @@
 ;       TOPHAT -- Diameter of the top-hat restriction on the
 ;                 morphological matching region [arcsec].
 ;                 Default = 0 (i.e. no top-hat imposed)
-;       Td     -- Dust temperature to use for conversion of BGPS
+;       Td     -- Dust temperature to use for conversion of SURVEY
 ;                 flux density to 8-um optical depth.
 ;                 [Default = mw.Td]
 ;       FMEAS  -- Calculated f_meas for object in STRUCT (used for
@@ -55,7 +55,7 @@
 ;
 ; OUTPUTS:
 ;       PROB     -- Likehihood (or chisqr) as a function of distance
-;                   for association between the BGPS image and the
+;                   for association between the SURVEY image and the
 ;                   GLIMPSE 8-um image.
 ;
 ; OPTIONAL OUTPUTS:
@@ -168,6 +168,9 @@
 ;                                   OMNI_PROBCOLOR, must have missed
 ;                                   this one when the change
 ;                                   originally occurred.
+;       Modified: 05/21/14, TPEB -- Added more useful warning
+;                                   messages, and changed BGPS ->
+;                                   SURVEY for uniformity.
 ;
 ;-
 
@@ -215,13 +218,16 @@ FUNCTION OMNI_EMAF_MORPH, s, dvec, MAKE_PS=make_ps, VERBOSE=verbose, $
   diff = dblarr(n_elements(d))
   
   IF verbose && ~silent THEN $
-     message,'Running OMNI_EMAF_MORPH on BGPS #'+string(s.cnum,format=fmt),/inf
+     message,'Running OMNI_EMAF_MORPH on '+survey.conf+' #'+$
+             string(s.cnum,format=fmt),/inf
   
   
   ;; Check that this object has the processed GLIMPSE / EMAF postage
   ;;   stamps.
   IF ~FILE_TEST(EMAF_DIR+conf.survey+'_mapdat'+scnum+'.fits',/READ) THEN BEGIN
-     message,'Source not contained in EMAFPOST location...',/inf
+     message,'Warning: Source '+conf.survey+' #'+string(s.cnum,format=fmt)+$
+             'has no processed GLIMPSE data products in EMAFPOST location!  '+$
+             'PROB_EMAF cannot be computed!',/inf
      return,prob
   ENDIF
   
@@ -257,11 +263,10 @@ FUNCTION OMNI_EMAF_MORPH, s, dvec, MAKE_PS=make_ps, VERBOSE=verbose, $
   ENDELSE
   label = labl                  ; To keep track for pixel removal
   
+  ;; Parse for easier coding
   l = s.glon
   b = s.glat
   
-  
-  time1 = systime(1) - start_t
   ;;========================================================
   ;; Determine hits pixels
   labl *= (irac LE Imir)        ; Only compare extincted pixels
@@ -313,7 +318,7 @@ FUNCTION OMNI_EMAF_MORPH, s, dvec, MAKE_PS=make_ps, VERBOSE=verbose, $
   dof = (floor(n_elements(hits)/conf.ppbeam)-1) > 1
   min_diff = min(diff,j)
   
-  time2 = systime(1) - start_t
+  ;;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   ;;================================================================
   ;; If selected, generate pretty pictures
   IF KEYWORD_SET( make_ps ) THEN BEGIN
@@ -437,13 +442,11 @@ FUNCTION OMNI_EMAF_MORPH, s, dvec, MAKE_PS=make_ps, VERBOSE=verbose, $
      myps,/done,/mp
      
   ENDIF  ;; End of postscript-creating IF block
+  ;;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
-  ;; Clean Memory
+  ;; Clean Memory & Math Error Codes
   undefine,map,Imir,irac,label,labl
-  
-  time3 = systime(1) - start_t
-  ;; print,time1,time2,time3
-  
   junk = CHECK_MATH()
+  
   RETURN,invchsq  ;; Return the inverse chi-squared function as the prior PDF
 END

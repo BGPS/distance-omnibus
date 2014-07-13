@@ -60,6 +60,8 @@
 ;                                   data.
 ;       Modified: 01/28/14, TPEB -- Added extra screen output for
 ;                                   debugging.
+;       Modified: 06/30/14, TPEB -- Add check for appropriate IDL
+;                                   version.
 ;
 ;-
 
@@ -67,6 +69,7 @@ PRO OMNI_GRS_SPECTRA_LOCAL, CONFFILE=cfile, START=start, REAR=rear, RAD=r, $
                             NOFILTER=nofilter
   
   COMPILE_OPT IDL2, LOGICAL_PREDICATE
+  omni_check_version            ; Check for an appropriate IDL version
   
   COMMON OMNI_CONFIG, conf, mw, local, dpdfs, ancil, fmt, conffile
   COMMON GRSMATCH_BLOCK, grsblock, grs_data, hd, s_data, obj, survey, $
