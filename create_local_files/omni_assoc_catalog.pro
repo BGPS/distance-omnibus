@@ -278,6 +278,8 @@ PRO OMNI_ASSOC_CATALOG, CONFFILE=cfile, START=start
      IF nmatch NE n_elements(hits) THEN $
         message,"You've got problems with your number of hits...  STOP!"
      
+     help,astrs
+     
      ;;===================================================================
      ;; If nmatch = 1, we are good to go, but we need to figure out
      ;;   which image should be used for objects with positions in
