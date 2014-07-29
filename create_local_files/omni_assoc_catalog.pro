@@ -263,6 +263,8 @@ PRO OMNI_ASSOC_CATALOG, CONFFILE=cfile, START=start
      print,'Hit Information:'
      print,[hit,hitm,hitp]
      print,[nhit,nhitm,nhitp]
+     help,mapdata
+     help,mapdata,/str
      
      ;; Check that we found something
      nmatch = nhit + nhitm + nhitp
