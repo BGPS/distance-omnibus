@@ -83,6 +83,7 @@
 ;                                   Also, tabulate number of pixels in
 ;                                   each source, and the peak flux
 ;                                   density pixel value.
+;       Modified: 07/29/14, TPEB -- Make an error message more helpful.
 ;
 ;-
 
@@ -274,6 +275,8 @@ PRO OMNI_ASSOC_CATALOG, CONFFILE=cfile, START=start
      ;; Remove any "-1" entries from hits 
      hits = hits[missing([-1],hits)]
      
+     IF nmatch NE n_elements(hits) THEN $
+        message,"You've got problems with your number of hits...  STOP!"
      
      ;;===================================================================
      ;; If nmatch = 1, we are good to go, but we need to figure out
@@ -341,11 +344,22 @@ PRO OMNI_ASSOC_CATALOG, CONFFILE=cfile, START=start
      x = (long(round(x)))[0]    ; SCALAR!
      y = (long(round(y)))[0]    ; SCALAR!
      
-     ;; If X is outside the map (shouldn't happen), then
+     ;; If X or Y is outside the map (shouldn't happen), then
      ;;   continue to next object...
      IF( x LT 0 || x GE mapdata[jj].naxis[0] ) THEN BEGIN
-        print,'Catalog #'+string(survey[ii].cnum,format=fmt)+$
-              '  WARNING!!!  XPOS: '+string(x,format="(I0)")
+        message,'Warning: X coordinate out of bounds for '+conf.survey+$
+                ' #'+string(survey[ii].cnum,format=fmt)+'.  XPOS = '+$
+                string(x,format="(I0)")+' bounds = [0,'+$
+                string(mapdata[jj].naxis[0],format="(I0)")+']  '+$
+                'Skipping to next object.',/inf
+        CONTINUE
+     ENDIF
+     IF( y LT 0 || y GE mapdata[jj].naxis[1] ) THEN BEGIN
+        message,'Warning: Y coordinate out of bounds for '+conf.survey+$
+                ' #'+string(survey[ii].cnum,format=fmt)+'.  YPOS = '+$
+                string(y,format="(I0)")+' bounds = [0,'+$
+                string(mapdata[jj].naxis[1],format="(I0)")+']  '+$
+                'Skipping to next object.',/inf
         CONTINUE
      ENDIF
      
