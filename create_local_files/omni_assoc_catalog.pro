@@ -260,6 +260,10 @@ PRO OMNI_ASSOC_CATALOG, CONFFILE=cfile, START=start
                    s[ii].glat LE mapdata.b[1], nhitp )
      s[ii].glon -= 360.
      
+     print,'Hit Information:'
+     print,[hit,hitm,hitp]
+     print,[nhit,nhitm,nhitp]
+     
      ;; Check that we found something
      nmatch = nhit + nhitm + nhitp
      IF nmatch EQ 0 THEN BEGIN
