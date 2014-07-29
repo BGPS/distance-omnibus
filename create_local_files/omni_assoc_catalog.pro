@@ -279,6 +279,7 @@ PRO OMNI_ASSOC_CATALOG, CONFFILE=cfile, START=start
         message,"You've got problems with your number of hits...  STOP!"
      
      help,astrs
+     print,nmatch,n_elements(hits),conf.haslabel,ii
      
      ;;===================================================================
      ;; If nmatch = 1, we are good to go, but we need to figure out
@@ -337,6 +338,8 @@ PRO OMNI_ASSOC_CATALOG, CONFFILE=cfile, START=start
      
      
      jj = jj[0]                 ; Make scalar, else all goes to hell.
+     
+     print,'JJ: ',jj
      
      ;;=======================================================
      ;; Get the survey image mapname, and place in structure
