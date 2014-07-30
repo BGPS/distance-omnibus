@@ -260,12 +260,6 @@ PRO OMNI_ASSOC_CATALOG, CONFFILE=cfile, START=start
                    s[ii].glat LE mapdata.b[1], nhitp )
      s[ii].glon -= 360.
      
-     print,'Hit Information:'
-     print,[hit,hitm,hitp]
-     print,[nhit,nhitm,nhitp]
-     help,mapdata
-     help,mapdata,/str
-     
      ;; Check that we found something
      nmatch = nhit + nhitm + nhitp
      IF nmatch EQ 0 THEN BEGIN
@@ -283,9 +277,6 @@ PRO OMNI_ASSOC_CATALOG, CONFFILE=cfile, START=start
      
      IF nmatch NE n_elements(hits) THEN $
         message,"You've got problems with your number of hits...  STOP!"
-     
-     help,astrs
-     print,nmatch,n_elements(hits),conf.haslabel,ii
      
      ;;===================================================================
      ;; If nmatch = 1, we are good to go, but we need to figure out
@@ -342,10 +333,7 @@ PRO OMNI_ASSOC_CATALOG, CONFFILE=cfile, START=start
      ENDIF ELSE jj = hits       ; End of the nmatch > 1 checking section
      ;;===================================================================
      
-     
      jj = jj[0]                 ; Make scalar, else all goes to hell.
-     
-     print,'JJ: ',jj
      
      ;;=======================================================
      ;; Get the survey image mapname, and place in structure
