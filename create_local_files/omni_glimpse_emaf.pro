@@ -493,6 +493,10 @@ PRO OMNI_GLIMPSE_EMAF, CONFFILE=cfile, CNUM_LIST=cnum_list, $
                  surveybox[0],surveybox[1],surveybox[2],surveybox[3],$
                  SILENT=silent
      
+     ;; If EQUINOX keyword in nhdb is not present, add it.
+     equinox = sxpar(nhdb,'EQUINOX',count=eqcount)
+     IF eqcount EQ 0 THEN sxaddpar,nhdb,'EQUINOX',2000.0
+     
      ;; Add CNUM, GLON, & GLAT for this source to the FITS header
      sxaddpar,nhd4,'OBJNUM',conf.survey+' '+string(num[p],format='('+fmt2+')'),$
               ' Survey Object Identifier'
