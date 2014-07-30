@@ -70,6 +70,9 @@
 ;                                   SURVEY solid angle.
 ;       Modified: 05/08/14, TPEB -- Add LOCAL.OUTPUT element to point
 ;                                   to the actual output directory.
+;       Modified: 07/30/14, TPEB -- Name change MINMAX to MIN_MAX to
+;                                   avoid conflict with the Coyote
+;                                   minmax.pro routine. 
 ;
 ;-
 
@@ -214,7 +217,7 @@ PRO OMNI_MIR_EXAMINE, fn, CONFFILE=cfile, TXTONLY=txtonly
      gcadjust = abs(min(glarr)-min(larr)) LE 300 ? 0. : -360. ; Deal w/ GC
      print,'Range values (G/S): ',min(glarr),min(larr)+gcadjust
      plotmap,gimg-xscat,ghdr,charsize=plotcs,ct=0,range=pr,/log,$
-             xrange=maxmin(larr)+gcadjust,yrange=minmax(barr)
+             xrange=max_min(larr)+gcadjust,yrange=minmax(barr)
      plot_wcs_axes,shdr,10,XC=xc,YC=yc
      
      ;; Mark the locations of PF09 IRDCs

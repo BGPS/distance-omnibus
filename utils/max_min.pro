@@ -1,6 +1,6 @@
 ;+
 ; NAME:
-;       MAXMIN
+;       MAX_MIN
 ;
 ; PURPOSE:
 ;       Returns the [max,min] of an array.  Useful for dealing with
@@ -10,7 +10,7 @@
 ;       Utility
 ;
 ; CALLING SEQUENCE:
-;       result = MAXMIN(array)
+;       result = MAX_MIN(array)
 ;
 ; INPUTS:
 ;       ARRAY -- An IDL numeric scalar, vector or array.
@@ -46,10 +46,13 @@
 ;
 ;       Created:  10/24/12, TPEB -- Initial version.  Simple wrapper
 ;                                   for minmax.pro
+;       Modified: 07/30/14, TPEB -- Name change to MIN_MAX to avoid
+;                                   conflict with the Coyote
+;                                   minmax.pro routine.
 ;
 ;-
 
-FUNCTION MAXMIN, array, subs, NAN=nan, DIMEN=dimen
+FUNCTION MAX_MIN, array, subs, NAN=nan, DIMEN=dimen
   
   mm = minmax(array,subs,NAN=nan,DIMEN=dimen)
   
