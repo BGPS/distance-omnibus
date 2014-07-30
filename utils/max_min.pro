@@ -46,9 +46,9 @@
 ;
 ;       Created:  10/24/12, TPEB -- Initial version.  Simple wrapper
 ;                                   for minmax.pro
-;       Modified: 07/30/14, TPEB -- Name change to MIN_MAX to avoid
+;       Modified: 07/30/14, TPEB -- Name change to MAX_MIN to avoid
 ;                                   conflict with the Coyote
-;                                   minmax.pro routine.
+;                                   maxmin.pro routine.
 ;
 ;-
 

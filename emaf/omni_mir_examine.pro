@@ -70,9 +70,9 @@
 ;                                   SURVEY solid angle.
 ;       Modified: 05/08/14, TPEB -- Add LOCAL.OUTPUT element to point
 ;                                   to the actual output directory.
-;       Modified: 07/30/14, TPEB -- Name change MINMAX to MIN_MAX to
+;       Modified: 07/30/14, TPEB -- Name change MAXMIN to MAX_MIN to
 ;                                   avoid conflict with the Coyote
-;                                   minmax.pro routine. 
+;                                   maxmin.pro routine.
 ;
 ;-
 
