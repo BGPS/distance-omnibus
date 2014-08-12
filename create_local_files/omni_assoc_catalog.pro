@@ -83,7 +83,12 @@
 ;                                   Also, tabulate number of pixels in
 ;                                   each source, and the peak flux
 ;                                   density pixel value.
-;       Modified: 07/29/14, TPEB -- Make an error message more helpful.
+;       Modified: 07/29/14, TPEB -- Make an error message more
+;                                   helpful.
+;       Modified: 08/12/14, TPEB -- Add check for object not in the
+;                                   collective label masks; skip
+;                                   object and spit a warning
+;                                   message.
 ;
 ;-
 
@@ -332,9 +337,17 @@ PRO OMNI_ASSOC_CATALOG, CONFFILE=cfile, START=start
         ENDELSE
      ENDIF ELSE jj = hits       ; End of the nmatch > 1 checking section
      ;;===================================================================
-     print,jj
+
      jj = jj[0]                 ; Make scalar, else all goes to hell.
-     print,jj
+     
+     ;; Error checking for object not in the label mask!!!
+     IF jj EQ -1 THEN BEGIN
+        message,'WARNING: Object '+conf.survey+' #'+$
+                string(s[ii].cnum,format=fmt2)+' is not in the label mask(s).'+$
+                '  Skipping this object for now; check your label masks.',/cont
+        CONTINUE
+     ENDIF
+     
      ;;=======================================================
      ;; Get the survey image mapname, and place in structure
      ;; Get the peak position of the survey source in the image
