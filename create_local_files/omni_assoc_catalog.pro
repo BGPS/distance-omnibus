@@ -300,10 +300,10 @@ PRO OMNI_ASSOC_CATALOG, CONFFILE=cfile, START=start
               IF( x LT 0 || x GE mapdata[jj].naxis[0] ) THEN CONTINUE
               IF( y LT 0 || y GE mapdata[jj].naxis[1] ) THEN CONTINUE
               val = (labels[jj])[x,y]
+              print,'VAL: ',val
               IF val NE 0 THEN bestjj = jj
            ENDFOR  
            jj = bestjj
-           print,'NMATCH NE 1; jj = ',jj
         ENDIF ELSE BEGIN
            ;; Else, this is a little messier
            
@@ -332,9 +332,9 @@ PRO OMNI_ASSOC_CATALOG, CONFFILE=cfile, START=start
               ENDIF
            ENDFOR
            jj = bestjj
-           print,'NMATCH EQ 1; jj = ',jj
         ENDELSE
      ENDIF ELSE jj = hits       ; End of the nmatch > 1 checking section
+     print,'jj,nhits,nmatch',jj,hits,nmatch
      ;;===================================================================
      
      jj = jj[0]                 ; Make scalar, else all goes to hell.
