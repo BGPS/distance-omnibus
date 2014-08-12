@@ -230,6 +230,9 @@ PRO OMNI_ASSOC_CATALOG, CONFFILE=cfile, START=start
      ENDELSE
      ;; Save ASTR structure for each map to be used later
      astrs.add, astr, jj
+     help,astrs
+     help,astrs,/str
+     help,astr
      
      ;; Keep memory clear
      undefine,xval,yval,hdr,astr,nhd,lhd
