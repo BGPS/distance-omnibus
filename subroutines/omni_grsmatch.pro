@@ -224,6 +224,8 @@ FUNCTION OMNI_GRSMATCH, s, V_STD=v_std, onspec=onspec, bdrspec=bdrspec, $
   ;; Check to see where this SURVEY object lands in the GRS data
   objmask = obj EQ this.labval
   ind = where(objmask, ct)
+  print,ct
+  print,ind
   IF ~ct THEN BEGIN
      message,'No match in SURVEY label map...',/cont
      RETURN, null_spec
