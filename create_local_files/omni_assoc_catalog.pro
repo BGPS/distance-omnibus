@@ -283,8 +283,6 @@ PRO OMNI_ASSOC_CATALOG, CONFFILE=cfile, START=start
      ;;   which image should be used for objects with positions in
      ;;   more than one map.
      
-     print,'NMATCH: ',nmatch
-     
      IF nmatch NE 1 THEN BEGIN
         ;; This process is facilitated if label maps are provided
         IF conf.haslabel THEN BEGIN
@@ -300,7 +298,6 @@ PRO OMNI_ASSOC_CATALOG, CONFFILE=cfile, START=start
               IF( x LT 0 || x GE mapdata[jj].naxis[0] ) THEN CONTINUE
               IF( y LT 0 || y GE mapdata[jj].naxis[1] ) THEN CONTINUE
               val = (labels[jj])[x,y]
-              print,'VAL: ',val
               IF val NE 0 THEN bestjj = jj
            ENDFOR  
            jj = bestjj
@@ -334,11 +331,10 @@ PRO OMNI_ASSOC_CATALOG, CONFFILE=cfile, START=start
            jj = bestjj
         ENDELSE
      ENDIF ELSE jj = hits       ; End of the nmatch > 1 checking section
-     print,'jj,nhits,nmatch',jj,hits,nmatch
      ;;===================================================================
-     
+     print,jj
      jj = jj[0]                 ; Make scalar, else all goes to hell.
-     
+     print,jj
      ;;=======================================================
      ;; Get the survey image mapname, and place in structure
      ;; Get the peak position of the survey source in the image
