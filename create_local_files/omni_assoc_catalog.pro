@@ -230,9 +230,6 @@ PRO OMNI_ASSOC_CATALOG, CONFFILE=cfile, START=start
      ENDELSE
      ;; Save ASTR structure for each map to be used later
      astrs.add, astr, jj
-     help,astrs
-     help,astrs,/str
-     help,astr
      
      ;; Keep memory clear
      undefine,xval,yval,hdr,astr,nhd,lhd
@@ -286,6 +283,8 @@ PRO OMNI_ASSOC_CATALOG, CONFFILE=cfile, START=start
      ;;   which image should be used for objects with positions in
      ;;   more than one map.
      
+     print,'NMATCH: ',nmatch
+     
      IF nmatch NE 1 THEN BEGIN
         ;; This process is facilitated if label maps are provided
         IF conf.haslabel THEN BEGIN
@@ -304,6 +303,7 @@ PRO OMNI_ASSOC_CATALOG, CONFFILE=cfile, START=start
               IF val NE 0 THEN bestjj = jj
            ENDFOR  
            jj = bestjj
+           print,'NMATCH NE 1; jj = ',jj
         ENDIF ELSE BEGIN
            ;; Else, this is a little messier
            
@@ -332,6 +332,7 @@ PRO OMNI_ASSOC_CATALOG, CONFFILE=cfile, START=start
               ENDIF
            ENDFOR
            jj = bestjj
+           print,'NMATCH EQ 1; jj = ',jj
         ENDELSE
      ENDIF ELSE jj = hits       ; End of the nmatch > 1 checking section
      ;;===================================================================
