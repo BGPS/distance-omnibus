@@ -84,6 +84,9 @@
 ;                                   rather than NaN.
 ;       Modified: 01/20/14, TPEB -- Actually return ONSPEC for
 ;                                   LANDLOCKED sources (bug fix).
+;       Modified: 08/12/14, TPEB -- Fixed bug involving object not in
+;                                   the label mask.  Now skips the
+;                                   object.
 ;
 ;-
 
@@ -224,7 +227,7 @@ FUNCTION OMNI_GRSMATCH, s, V_STD=v_std, onspec=onspec, bdrspec=bdrspec, $
   ;; Check to see where this SURVEY object lands in the GRS data
   objmask = obj EQ this.labval
   ind = where(objmask, ct)
-  IF ~ct THEN BEGIN
+  IF ~ct || this.labval EQ 0 THEN BEGIN
      message,'No match in SURVEY label map...',/cont
      RETURN, null_spec
   ENDIF

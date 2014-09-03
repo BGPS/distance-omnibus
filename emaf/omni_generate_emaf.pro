@@ -123,7 +123,10 @@ PRO OMNI_GENERATE_EMAF, TEST=test, CONFFILE=cfile
      message,'Error: The EMAF rejection list '+rejlist+' does not exist.  '+$
              'Run OMNI_MIR_EXAMINE to create a by-eye source rejection list.',$
              /cont
-     RETURN
+     ;; Create empty file and go on... hopefully this works!
+     openw,lun,rejlist,/get_lun
+     close,lun
+     free_lun,lun
   ENDIF
   
   ;; Read in SURVEY structure
