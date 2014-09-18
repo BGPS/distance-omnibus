@@ -53,6 +53,13 @@
 ;                                   visible changes.
 ;       Modified: 11/12/13, TPEB -- Fixed bug introduced with above
 ;                                   performance-enhancing drug.
+;       Modified: 09/17/14, TPEB -- Fix issue when multiple peaks are
+;                                   NOT separated by a valley dipping
+;                                   below ancil.grs_ta.  Once regions
+;                                   above ancil.grs_ta are identified,
+;                                   recompute the peak indices using
+;                                   the greater of ancil.grs_ta or the
+;                                   (peak TA* / ancil.grs_ratio).
 ;
 ;-
 
@@ -70,6 +77,10 @@ PRO OMNI_GRS_MASKSPEC, spectrum, flag
   IF ~exist(ancil) THEN $
      ancil = omni_read_conffile('./conffiles/ancillary.conf')
   
+  ;; Check for v_std... create from configuration file
+  IF ~exist(v_std) THEN $
+     v_std = findgen(conf.nvbin)*conf.deltav + conf.vstart
+  
   ;; Check the existance and format of SPECTRUM
   IF ~exist(spectrum) || n_elements(spectrum) NE conf.nvbin THEN BEGIN
      message,'SPECTRUM either does not exist or does not conform to '+$
@@ -83,6 +94,11 @@ PRO OMNI_GRS_MASKSPEC, spectrum, flag
   
   ;; Find contiguous regions above SPECIFIED VALUE in the On-Off spectrum
   si = where(spectrum GE ancil.grs_ta, nsi)
+  ;; Check for the absolute peak TA* in these regions.
+  tpk = max(spectrum[si])       ; Absolute peak TA* in On-Off spectrum
+  ;; Recompute contiguous regions based on the threshold peak-to-peak
+  ;;    ratio (if criteria is larger than ancil.grs_ta). (9/17/14)
+  si = where(spectrum GE (ancil.grs_ta > (tpk/ancil.grs_ratio)), nsi)
   
   IF nsi GT 1 THEN BEGIN        ; Only consider detections
      
