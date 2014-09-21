@@ -482,7 +482,11 @@ PRO OMNI_GLIMPSE_EMAF, CONFFILE=cfile, CNUM_LIST=cnum_list, $
      IF labelbox[3] - labelbox[2] LE bdr2 || $
         labelbox[1] - labelbox[0] LE bdr2 THEN CONTINUE
      
-     ;; Go about extracting the proper sections of the images.
+     ;; If EQUINOX keyword in nhdb is not present, add it.
+     equinox = sxpar(hdb,'EQUINOX',count=eqcount)
+     IF eqcount EQ 0 THEN sxaddpar,hdb,'EQUINOX',2000.0
+     
+      ;; Go about extracting the proper sections of the images.
      hextract,data4,hd4,ndata4,nhd4,box[0],box[1],box[2],box[3],SILENT=silent
      hextract,datab,hdb,surveystamp,nhdb,$
               surveybox[0],surveybox[1],surveybox[2],surveybox[3],SILENT=silent
@@ -493,7 +497,7 @@ PRO OMNI_GLIMPSE_EMAF, CONFFILE=cfile, CNUM_LIST=cnum_list, $
                  surveybox[0],surveybox[1],surveybox[2],surveybox[3],$
                  SILENT=silent
      
-     ;; Add CNUM, GLON, & GLAT for this source to the FITS header
+    ;; Add CNUM, GLON, & GLAT for this source to the FITS header
      sxaddpar,nhd4,'OBJNUM',conf.survey+' '+string(num[p],format='('+fmt2+')'),$
               ' Survey Object Identifier'
      sxaddpar,nhd4,'GLON',l[p],' [deg] Galactic Longitude for this object',$

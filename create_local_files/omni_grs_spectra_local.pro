@@ -25,7 +25,9 @@
 ;       REAR     -- Catalog entry number to end with [Default: last]
 ;
 ; KEYWORD PARAMETERS:
-;       NOFILTER -- Do not apply a SavGol filter to the data.
+;       NOFILTER   -- Do not apply a SavGol filter to the data.
+;       FORCE_SAVE -- Force the saving of the structure to disk even
+;                     though START and/or REAR are set.
 ;
 ; OUTPUTS:
 ;       Creates the IDL save file: ./local/bgps_grs_spectra.sav  (~32 MB)
@@ -62,11 +64,14 @@
 ;                                   debugging.
 ;       Modified: 06/30/14, TPEB -- Add check for appropriate IDL
 ;                                   version.
+;       Modified: 08/12/14, TPEB -- Add check to only save if START
+;                                   and REAR are NOT specified OR the
+;                                   option FORCE_SAVE is set.
 ;
 ;-
 
 PRO OMNI_GRS_SPECTRA_LOCAL, CONFFILE=cfile, START=start, REAR=rear, RAD=r, $
-                            NOFILTER=nofilter
+                            NOFILTER=nofilter, FORCE_SAVE=force_save
   
   COMPILE_OPT IDL2, LOGICAL_PREDICATE
   omni_check_version            ; Check for an appropriate IDL version
@@ -77,6 +82,8 @@ PRO OMNI_GRS_SPECTRA_LOCAL, CONFFILE=cfile, START=start, REAR=rear, RAD=r, $
   
   ;; Parse keywords
   nofilter = KEYWORD_SET(nofilter)
+  do_save  = KEYWORD_SET(force_save) || $
+             ( ~n_elements(start) AND ~n_elements(rear) )
   
   ;; Define COMMON structure to hold the small items, 
   ;;    if not already defined 
@@ -214,11 +221,13 @@ PRO OMNI_GRS_SPECTRA_LOCAL, CONFFILE=cfile, START=start, REAR=rear, RAD=r, $
      
   ENDFOR
   
-  fn_suf = ~nofilter ? '' : '_nofilt'
-  
-  save,grs,filename='local/'+conf.survey+'_grs_spectra_r'+$
-       string(r,format="(I0)")+fn_suf+'.sav',/ver
-  message,'FILENAME: '+'local/'+conf.survey+'_grs_spectra_r'+$
-       string(r,format="(I0)")+fn_suf+'.sav',/inf
+  IF do_save THEN BEGIN         ; Only save if conditions met
+     fn_suf = ~nofilter ? '' : '_nofilt'
+     
+     save,grs,filename='local/'+conf.survey+'_grs_spectra_r'+$
+          string(r,format="(I0)")+fn_suf+'.sav',/ver
+     message,'FILENAME: '+'local/'+conf.survey+'_grs_spectra_r'+$
+             string(r,format="(I0)")+fn_suf+'.sav',/inf
+  ENDIF
   
 END

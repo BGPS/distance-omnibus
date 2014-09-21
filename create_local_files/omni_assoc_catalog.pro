@@ -83,6 +83,12 @@
 ;                                   Also, tabulate number of pixels in
 ;                                   each source, and the peak flux
 ;                                   density pixel value.
+;       Modified: 07/29/14, TPEB -- Make an error message more
+;                                   helpful.
+;       Modified: 08/12/14, TPEB -- Add check for object not in the
+;                                   collective label masks; skip
+;                                   object and spit a warning
+;                                   message.
 ;
 ;-
 
@@ -274,6 +280,8 @@ PRO OMNI_ASSOC_CATALOG, CONFFILE=cfile, START=start
      ;; Remove any "-1" entries from hits 
      hits = hits[missing([-1],hits)]
      
+     IF nmatch NE n_elements(hits) THEN $
+        message,"You've got problems with your number of hits...  STOP!"
      
      ;;===================================================================
      ;; If nmatch = 1, we are good to go, but we need to figure out
@@ -329,9 +337,16 @@ PRO OMNI_ASSOC_CATALOG, CONFFILE=cfile, START=start
         ENDELSE
      ENDIF ELSE jj = hits       ; End of the nmatch > 1 checking section
      ;;===================================================================
-     
-     
+
      jj = jj[0]                 ; Make scalar, else all goes to hell.
+     
+     ;; Error checking for object not in the label mask!!!
+     IF jj EQ -1 THEN BEGIN
+        message,'WARNING: Object '+conf.survey+' #'+$
+                string(s[ii].cnum,format=fmt2)+' is not in the label mask(s).'+$
+                '  Skipping this object for now; check your label masks.',/cont
+        CONTINUE
+     ENDIF
      
      ;;=======================================================
      ;; Get the survey image mapname, and place in structure
@@ -341,11 +356,22 @@ PRO OMNI_ASSOC_CATALOG, CONFFILE=cfile, START=start
      x = (long(round(x)))[0]    ; SCALAR!
      y = (long(round(y)))[0]    ; SCALAR!
      
-     ;; If X is outside the map (shouldn't happen), then
+     ;; If X or Y is outside the map (shouldn't happen), then
      ;;   continue to next object...
      IF( x LT 0 || x GE mapdata[jj].naxis[0] ) THEN BEGIN
-        print,'Catalog #'+string(survey[ii].cnum,format=fmt)+$
-              '  WARNING!!!  XPOS: '+string(x,format="(I0)")
+        message,'Warning: X coordinate out of bounds for '+conf.survey+$
+                ' #'+string(survey[ii].cnum,format=fmt)+'.  XPOS = '+$
+                string(x,format="(I0)")+' bounds = [0,'+$
+                string(mapdata[jj].naxis[0],format="(I0)")+']  '+$
+                'Skipping to next object.',/inf
+        CONTINUE
+     ENDIF
+     IF( y LT 0 || y GE mapdata[jj].naxis[1] ) THEN BEGIN
+        message,'Warning: Y coordinate out of bounds for '+conf.survey+$
+                ' #'+string(survey[ii].cnum,format=fmt)+'.  YPOS = '+$
+                string(y,format="(I0)")+' bounds = [0,'+$
+                string(mapdata[jj].naxis[1],format="(I0)")+']  '+$
+                'Skipping to next object.',/inf
         CONTINUE
      ENDIF
      

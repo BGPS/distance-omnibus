@@ -46,6 +46,8 @@
 ;       Modified: 02/06/14, TPEB -- Split out this auxillary routine
 ;                                   from OMNI_RESD_CONFFILE.pro into a
 ;                                   separate file.
+;       Modified: 09/03/14, TPEB -- Add rotation curve parameter U_s,
+;                                   as in Reid et al. (2014)
 ;
 ;-
 
@@ -59,6 +61,7 @@ FUNCTION OMNI_READ_CONFFILE_GALACTIC, lun, conffile, lnum
   conf = {r0:0.d,$
           v0:0.d,$
           vs:0.d,$
+          us:0.d,$
           errvlsr:0.d,$
           z0:0.d,$
           bigu:0.d,$
@@ -80,6 +83,7 @@ FUNCTION OMNI_READ_CONFFILE_GALACTIC, lun, conffile, lnum
         'r0':         conf.r0         = (nword EQ 1) ? 0.d : double(val)
         'v0':         conf.v0         = (nword EQ 1) ? 0.d : double(val)
         'vs':         conf.vs         = (nword EQ 1) ? 0.d : double(val)
+        'us':         conf.us         = (nword EQ 1) ? 0.d : double(val)
         'errvlsr':    conf.errvlsr    = (nword EQ 1) ? 0.d : double(val)
         'z0':         conf.z0         = (nword EQ 1) ? 0.d : double(val)
         'bigu':       conf.bigu       = (nword EQ 1) ? 0.d : double(val)

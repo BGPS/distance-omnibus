@@ -67,6 +67,10 @@
 ;                                   beyond the Solar Circle.
 ;       Modified: 01/09/14, TPEB -- Fixed bug related to VEL_BLOCK
 ;                                   usage.
+;       Modified: 09/05/14, TPEB -- Fixed probability squashing for
+;                                   objects beyond the Solar Circle to
+;                                   avoid application to velocity
+;                                   non-detections (v.vlsr = -1000.d).
 ;
 ;-
 
@@ -138,7 +142,8 @@ FUNCTION PROB_KDIST, s, DVEC=dvec, CONSTRAIN=constrain, CONFFILE=cfile
   CASE 1 OF
      
      l GT 0. && l LT 90.: $     ; Quadrant I
-        IF v[this].vlsr LT -5. THEN prob_kdist_squash, dpdf, l, b
+        IF v[this].vlsr LT -5. AND v[this].vlsr GT -500. THEN $ ; The -500 bit
+           prob_kdist_squash, dpdf, l, b                        ; avoids non-det
      
      l LT 0. || l GT 270.: $    ; Quadrant IV
         IF v[this].vlsr GT +5. THEN prob_kdist_squash, dpdf, l, b

@@ -114,6 +114,8 @@
 ;       Modified: 06/30/14, TPEB -- Convert storage of map information
 ;                                   from individual named variables
 ;                                   into lists (requires IDL 8.0+).
+;       Modified: 09/21/14, TPEB -- Add a Check_Math() to silence
+;                                   underflow errors.
 ;
 ;-
 
@@ -488,9 +490,9 @@ PRO OMNI_IMPORT_VELOCITY, CONFFILE=cfile, VERBOSE=verbose, NOGRSFILT=nogrsfilt
                  omni_grs_maskspec, spectrum, grsflag
                  CASE grsflag OF
                     0: v[ci].grs.flag = 7 ; Nothing worth anything
-                    1: v[ci].grs.flag = 4  ; If okay, set flag = 4
-                    2: v[ci].grs.flag = 5  ; If multiple, set flag = 5
-                    3: v[ci].grs.flag = 6  ; If indistinguishable, set flag = 6
+                    1: v[ci].grs.flag = 4 ; If okay, set flag = 4
+                    2: v[ci].grs.flag = 5 ; If multiple, set flag = 5
+                    3: v[ci].grs.flag = 6 ; If indistinguishable, set flag = 6
                     ELSE: message,"It's the end of the world as we know it, "+$
                                   "and I feel fine."
                  ENDCASE
@@ -509,6 +511,8 @@ PRO OMNI_IMPORT_VELOCITY, CONFFILE=cfile, VERBOSE=verbose, NOGRSFILT=nogrsfilt
         ;;*************************************************************** 
      ENDIF
      ;;GRS-GRS-GRS-GRS-GRS-GRS-GRS-GRS-GRS-GRS-GRS-GRS-GRS-GRS-GRS-GRS-GRS
+     
+     void = Check_Math()        ; Clear out Math Errors
      
      ;; Skip to next object if no dense gas spectral information
      IF total(v[ci].mol.tmb) EQ 0 THEN CONTINUE
