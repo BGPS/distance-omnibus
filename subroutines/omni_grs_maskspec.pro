@@ -71,7 +71,8 @@
 ;                                   multiple summits, they will be
 ;                                   analyzed individually using the
 ;                                   criteria for multiple peaks in the
-;                                   spectrum.
+;                                   spectrum.  Add Check_Math() calls
+;                                   to silence underflow errors.
 ;
 ;-
 
@@ -107,7 +108,7 @@ PRO OMNI_GRS_MASKSPEC, spectrum, flag
   ;; Find contiguous regions above SPECIFIED VALUE in the On-Off spectrum
   si = where(spectrum GE ancil.grs_ta, nsi)
   
-  ;; IF no detection, then return blank
+  ;; IF no detection at all, then return blank
   IF nsi EQ 0 THEN BEGIN
      spectrum *= 0.
      RETURN
@@ -130,11 +131,15 @@ PRO OMNI_GRS_MASKSPEC, spectrum, flag
   tas = list(!null)             ; LIST to hold TA* for each peak
   kk  = -1                      ; Segment counter to include multi-multi's
   
+  void = Check_Math()           ; Clear out Math Errors
+  
   FOR jj=0, nseg-1 DO BEGIN     ; Loop over segments
-     kk++                       ; Increment KK counter
      si2 = si[sti:ij[jj]]       ; Array elements for this peak
      sti = ij[jj] + 1           ; Set up for start of next peak
      
+     ;; Check size of this peak... if less than 2, then skip to next peak
+     IF n_elements(si2) LT 2 THEN CONTINUE
+     kk++                       ; Increment KK counter if not skipped
      
      ;; Check to see if this peak is a "Big Island" type island,
      ;;    meaning there are multiple summits in a single island
@@ -143,16 +148,18 @@ PRO OMNI_GRS_MASKSPEC, spectrum, flag
      ;;    regions for the positive "slope".  (Quotes used
      ;;    because we're not dividing by dx here... only
      ;;    using dy).
-     spec_seg = spectrum[si2]                    ; Extract just this peak
-     dy       = spec_seg[1:*] - spec_seg[0:*]    ; Compute dy
-     seg_sti  = 0                                ; Index within this peak
-     seg_inds = lindgen(n_elements(si2))         ; Indices within this peak
-     v_seg    = v_std[si2]                       ; Velocities for this peak
+     spec_seg = spectrum[si2]                 ; Extract just this peak
+     dy       = spec_seg[1:*] - spec_seg[0:*] ; Compute dy
+     seg_sti  = 0                             ; Index within this peak
+     seg_inds = lindgen(n_elements(si2))      ; Indices within this peak
+     v_seg    = v_std[si2]                    ; Velocities for this peak
      
      ;; Find elements of - slope, add last element for proper operation
      downslope  = [where(dy LT 0.),n_elements(spec_seg)-1]
      ;; Steps between indices for regions of - slope.
      sl_step = downslope[1:*] - downslope[0:*]
+     
+     void = Check_Math()        ; Clear out Math Errors
      
      ;; Compute the number and location(s) of "saddle points",
      ;;    where n_saddle = # jumps in downslope
@@ -176,8 +183,10 @@ PRO OMNI_GRS_MASKSPEC, spectrum, flag
         
         ;; Array elements for this summit out of this island 
         seg_si2 = seg_inds[seg_sti:saddles[ll]]
-        tas.add, max(seg_spec[seg_si2]), kk ; TA* for this summit
+        tas.add, max(spec_seg[seg_si2]), kk ; TA* for this summit
         seg_sti = saddles[ll] + 1           ; Set up for start of next summit
+        
+        void = Check_Math()     ; Clear out Math Errors
         
         IF tas[kk] LT tpk THEN CONTINUE ; If not brightest peak, skip to next
         
@@ -190,8 +199,12 @@ PRO OMNI_GRS_MASKSPEC, spectrum, flag
      
   ENDFOR
   
-  ;; Convert the LIST to an ARRAY for analysis.
-  tas = tas.ToArray(Dimension=1)
+  void = Check_Math()           ; Clear out Math Errors
+  
+  ;; Convert the LIST to an ARRAY for analysis.  First, remove the
+  ;;   '!null' in the last element.
+  tas.remove
+  tas = tas.ToArray()
   
   ;; Error checking
   IF tpk EQ 0 THEN BEGIN
@@ -203,7 +216,6 @@ PRO OMNI_GRS_MASKSPEC, spectrum, flag
   ;;   peak -- If LT SPECIFIED VALUE, then return uniform
   ;;           DPDF, since the peaks are indistinguishable. 
   nseg = n_elements(tas)        ; Redefine nseg, in the event of "Big Islands"
-  print,'Number of peaks: ',nseg
   rat = tpk / tas
   
   ;; SET FLAGS APPROPRIATELY: 0,1,2,3
