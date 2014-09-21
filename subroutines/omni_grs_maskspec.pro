@@ -60,6 +60,18 @@
 ;                                   recompute the peak indices using
 ;                                   the greater of ancil.grs_ta or the
 ;                                   (peak TA* / ancil.grs_ratio).
+;       Modified: 09/21/14, TPEB -- Correct fix for the "Big Island"
+;                                   problem, which was attempted in
+;                                   the 09/17/14 fix.  Now, the
+;                                   routine identifies islands above
+;                                   the THRESHOLD value, then analyzes
+;                                   each island for multiple summits
+;                                   (a la the Big Island of Hawaii).
+;                                   In this way, if one island has
+;                                   multiple summits, they will be
+;                                   analyzed individually using the
+;                                   criteria for multiple peaks in the
+;                                   spectrum.
 ;
 ;-
 
@@ -94,88 +106,141 @@ PRO OMNI_GRS_MASKSPEC, spectrum, flag
   
   ;; Find contiguous regions above SPECIFIED VALUE in the On-Off spectrum
   si = where(spectrum GE ancil.grs_ta, nsi)
-  ;; Check for the absolute peak TA* in these regions.
-  tpk = max(spectrum[si])       ; Absolute peak TA* in On-Off spectrum
-  ;; Recompute contiguous regions based on the threshold peak-to-peak
-  ;;    ratio (if criteria is larger than ancil.grs_ta). (9/17/14)
-  si = where(spectrum GE (ancil.grs_ta > (tpk/ancil.grs_ratio)), nsi)
   
-  IF nsi GT 1 THEN BEGIN        ; Only consider detections
+  ;; IF no detection, then return blank
+  IF nsi EQ 0 THEN BEGIN
+     spectrum *= 0.
+     RETURN
+  ENDIF
+  
+  ;; Compute the STEPS between indices above THRESHOLD; if there
+  ;;   are gaps, this indicates multiple "islands" above the
+  ;;   THRESHOLD sea.
+  si   = [si,n_elements(spectrum)] ; Needed for proper operation
+  step = si[1:*] - si[0:*]         ; Steps between indices above THRESHOLD
+  
+  ;; Compute the number of segments based on STEP
+  ij = [where(step NE 1),n_elements(step)-1] ; Find the jumps
+  ij = ij[uniq(ij,sort(ij))]                 ; Make unique
+  nseg = n_elements(ij)                      ; Number of segments
+  
+  ;; Find brightest peak
+  sti = 0                       ; Starting index
+  tpk = max(spectrum[si])       ; Absolute peak TA* in On-Off spectrum
+  tas = list(!null)             ; LIST to hold TA* for each peak
+  kk  = -1                      ; Segment counter to include multi-multi's
+  
+  FOR jj=0, nseg-1 DO BEGIN     ; Loop over segments
+     kk++                       ; Increment KK counter
+     si2 = si[sti:ij[jj]]       ; Array elements for this peak
+     sti = ij[jj] + 1           ; Set up for start of next peak
      
-     step = si[1:*] - si[0:*]   ; Steps between indices above THRESHOLD
      
-     CASE (max(step) EQ 1) OF
+     ;; Check to see if this peak is a "Big Island" type island,
+     ;;    meaning there are multiple summits in a single island
+     ;;    rising above the THRESHOLD sea.  Compute the
+     ;;    "derivative" of the spectrum & look for discontinuous
+     ;;    regions for the positive "slope".  (Quotes used
+     ;;    because we're not dividing by dx here... only
+     ;;    using dy).
+     spec_seg = spectrum[si2]                    ; Extract just this peak
+     dy       = spec_seg[1:*] - spec_seg[0:*]    ; Compute dy
+     seg_sti  = 0                                ; Index within this peak
+     seg_inds = lindgen(n_elements(si2)          ; Indices within this peak
+     v_seg    = v_std[si2]                       ; Velocities for this peak
+     
+     ;; Find elements of - slope, add last element for proper operation
+     downslope  = [where(dy LT 0.),n_elements(spec_seg)-1]
+     ;; Steps between indices for regions of - slope.
+     sl_step = downslope[1:*] - downslope[0:*]
+     
+     ;; Compute the number and location(s) of "saddle points",
+     ;;    where n_saddle = # jumps in downslope
+     ;;    == First, compute the number of summits based on SL_STEP
+     kl = [where(sl_step NE 1),n_elements(downslope)-1] ; Find the jumps
+     kl = kl[where(kl GE 0)]       ; Remove any "-1" that may exist.
+     kl = kl[uniq(kl,sort(kl))]    ; Make unique
+     n_summit = n_elements(kl)     ; N summits
+     
+     
+     ;; Indices of Saddle Locations.  Note that if n_saddle == 0,
+     ;;   then kl = -1, which places saddles = last element of
+     ;;   segment, which is just where we want it! 
+     saddles = downslope[kl]
+     
+     ;; Loop through summits
+     FOR ll=0, n_summit-1 DO BEGIN
         
-        1: BEGIN                ; Single Peak
-           
-           nseg = 1             ; Number of segments
-           flag = 1b            ; Flag for single peak
-           
-           ;; Fit a gaussian to the peak
-           est = [max(spectrum), v_std[median(si)], 2.]
-           yft = mpfitpeak(v_std, spectrum, A, NTERMS=3, ESTIMATES=est)
-           
-           ;; Mask out the portion of SPECTRUM beyond 3 sigma from the
-           ;;   peak to remove 'noise' at other velocities.
-           spectrum *= (abs( v_std - A[1] ) LE 3.d * A[2])
-           
-        END
-        0: BEGIN                ; Multiple Peaks
-           
-           si   = [si,n_elements(spectrum)] ; Needed for proper operation
-           step = si[1:*] - si[0:*]         ; Recompute step
-           
-           ij = [where(step NE 1),n_elements(step)-1] ; Find the jumps
-           ij = ij[uniq(ij,sort(ij))]                 ; Make unique
-           nseg = n_elements(ij)                      ; Number of segments
-           
-           ;; Find brightest peak
-           sti = 0                 ; Starting index
-           tpk = max(spectrum[si]) ; Absolute peak TA* in On-Off spectrum
-           tas = fltarr(nseg)      ; Array to hold TA* for each peak
-           
-           FOR jj=0, nseg-1 DO BEGIN ; Loop over segments
-              
-              si2 = si[sti:ij[jj]]         ; Array elements for this peak
-              tas[jj] = max(spectrum[si2]) ; TA* for this peak
-              sti = ij[jj] + 1             ; Set up for start of next peak
-              
-              IF tas[jj] LT tpk THEN CONTINUE ; If not brightest peak, skip
-              
-              ;; Fit a gaussian to this peak
-              est = [tas[jj],v_std[median(si2)],2.]
-              yft = mpfitpeak(v_std, spectrum, A, NTERMS=3, ESTIMATES=est)
-              tpk = tas[jj]
-              vel = A[1]
-              sig = A[2]
-           ENDFOR
-           
-           ;; Error checking
-           IF tpk EQ 0 THEN BEGIN
-              spectrum *= 0.
-              RETURN
-           ENDIF
-           
-           ;; Check the ratio of TA* between primary and secondary
-           ;;   peak -- If LT SPECIFIED VALUE, then return uniform
-           ;;           DPDF, since the peaks are indistinguishable. 
-           
-           rat = tpk / tas
-           IF min(rat[where(rat GT 1., nri)]) LT ancil.grs_ratio THEN BEGIN
-              spectrum *= 0.    ; Null out spectrum
-              flag = 3b         ; Multiple velocities -- unable to distinguish
-              RETURN
-           ENDIF
-           
-           ;; Mask out the portion of SPECTRUM beyond 3 sigma from this
-           ;;   peak to remove 'noise' at other velocities.
-           spectrum *= (abs( v_std - vel ) LE 3.d * sig)
-           flag = 2b            ; Multiple velocities -- able to distinguish
-           
-        END
-     ENDCASE
+        ;; Augment KK, if necessary.
+        IF ll GE 1 THEN kk++
+        
+        ;; Array elements for this summit out of this island 
+        seg_si2 = seg_inds[seg_sti:saddles[ll]]
+        tas.add = max(seg_spec[seg_si2]), kk ; TA* for this summit
+        seg_sti = saddles[ll] + 1            ; Set up for start of next summit
+        
+        IF tas[kk] LT tpk THEN CONTINUE ; If not brightest peak, skip to next
+        
+        ;; Fit a gaussian to this peak
+        est = [tas[kk],v_seg[median(seg_si2)],2.]
+        yft = mpfitpeak(v_std, spectrum, A, NTERMS=3, ESTIMATES=est)
+        vel = A[1]
+        sig = A[2]
+     ENDFOR
      
-  ENDIF ELSE spectrum *= 0.     ; No detection, return blank
+  ENDFOR
+  
+  ;; Convert the LIST to an ARRAY for analysis.
+  tas = tas.ToArray(Dimension=1)
+  
+  ;; Error checking
+  IF tpk EQ 0 THEN BEGIN
+     spectrum *= 0.
+     RETURN
+  ENDIF
+  
+  ;; Check the ratio of TA* between primary and secondary
+  ;;   peak -- If LT SPECIFIED VALUE, then return uniform
+  ;;           DPDF, since the peaks are indistinguishable. 
+  nseg = n_elements(tas)        ; Redefine nseg, in the event of "Big Islands"
+  print,'Number of peaks: ',nseg
+  rat = tpk / tas
+  
+  ;; SET FLAGS APPROPRIATELY: 0,1,2,3
+  CASE 1 OF
+     
+     nseg EQ 1: flag = 1b       ; Single Peak
+     
+     nseg GT 1: BEGIN           ; Multiple Peaks
+        
+        IF min(rat[where(rat GT 1., nri)]) LT ancil.grs_ratio THEN BEGIN
+           spectrum *= 0.       ; Null out spectrum
+           flag = 3b            ; Multiple velocities -- unable to distinguish
+           RETURN
+        ENDIF
+        
+        flag = 2b               ; Multiple velocities -- able to distinguish
+        
+     END
+     
+     nseg EQ 0: BEGIN           ; Error catching -- should never run
+        message,'Warning: No segments found at the end of the routine.  '+$
+                'This may signify major issues.  Please see a qualified '+$
+                'developer or just take several shots of rum.',/cont
+        spectrum *= 0.
+        RETURN
+     END
+     
+     ELSE: $                   ; More error catching -- REALLY should never run
+        message,'ERROR: "Danger, Will Robinson!"  Drop everything and '+$
+                'figure out just what the hell is going on here!!!  '+$
+                'Variable nseg LT 0.'
+  ENDCASE                       ; End of FLAG-SET section
+  
+  ;; Mask out the portion of SPECTRUM beyond 3 sigma from this
+  ;;   peak to remove 'noise' at other velocities.
+  spectrum *= (abs( v_std - vel ) LE 3.d * sig)
+  
   
   RETURN
   
