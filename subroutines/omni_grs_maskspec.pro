@@ -146,7 +146,7 @@ PRO OMNI_GRS_MASKSPEC, spectrum, flag
      spec_seg = spectrum[si2]                    ; Extract just this peak
      dy       = spec_seg[1:*] - spec_seg[0:*]    ; Compute dy
      seg_sti  = 0                                ; Index within this peak
-     seg_inds = lindgen(n_elements(si2)          ; Indices within this peak
+     seg_inds = lindgen(n_elements(si2))         ; Indices within this peak
      v_seg    = v_std[si2]                       ; Velocities for this peak
      
      ;; Find elements of - slope, add last element for proper operation
@@ -176,8 +176,8 @@ PRO OMNI_GRS_MASKSPEC, spectrum, flag
         
         ;; Array elements for this summit out of this island 
         seg_si2 = seg_inds[seg_sti:saddles[ll]]
-        tas.add = max(seg_spec[seg_si2]), kk ; TA* for this summit
-        seg_sti = saddles[ll] + 1            ; Set up for start of next summit
+        tas.add, max(seg_spec[seg_si2]), kk ; TA* for this summit
+        seg_sti = saddles[ll] + 1           ; Set up for start of next summit
         
         IF tas[kk] LT tpk THEN CONTINUE ; If not brightest peak, skip to next
         
