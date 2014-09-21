@@ -184,6 +184,11 @@
 ;                                   execution if an error is detected.
 ;       Modified: 06/30/14, TPEB -- Add check for appropriate IDL
 ;                                   version.
+;       Modified: 09/21/14, TPEB -- Add timestamp on the "all done"
+;                                   message printed at conclusion of
+;                                   routine.  Add additional
+;                                   CHECK_MATH() call to clear out
+;                                   "underflow" messages.
 ;
 ;-
 
@@ -479,9 +484,9 @@ PRO DISTANCE_OMNIBUS, CONFFILE=cfile,CNUM_LIST=cnum_list, VERBOSE=verbose, $
      ;; Set flag for rejection of kinematic information based on
      ;;   location in the L-V diagram
      CASE 1 OF
-        v[j].vlsr GE -500.: vlsr = v[j].vlsr                   
-        where([1,2,5,6] EQ v[j].grs.flag) NE -1: vlsr = v[j].grs.vlsr 
-        ELSE: vlsr = -1000.
+        v[j].vlsr GE -500.:                      vlsr = v[j].vlsr     ; d.g.
+        where([1,2,5,6] EQ v[j].grs.flag) NE -1: vlsr = v[j].grs.vlsr ; 13CO
+        ELSE:                                    vlsr = -1000.        ; NONE
      ENDCASE
      reject_kd = OMNI_KINEMATIC_AVOIDANCE(v[j].l,vlsr)
      ;;@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -491,15 +496,19 @@ PRO DISTANCE_OMNIBUS, CONFFILE=cfile,CNUM_LIST=cnum_list, VERBOSE=verbose, $
      ;;    together! 
      pvec[j].post = d*0.d + 1.d
      
-     FOR i=0L, n_prob-1 DO BEGIN
-        IF ~Execute( prob_list[i] ) THEN STOP ; Run the probability!
-        constrain[j].(i+1) = constr ; The (i+1) skips over the .CNUM element
+     FOR ii=0L, n_prob-1 DO BEGIN
+        IF ~Execute( prob_list[ii] ) THEN STOP ; Run the probability!
+        constrain[j].(ii+1) = constr ; The (ii+1) skips over the .CNUM element
+        
+        void = Check_Math()     ; Clear Math Errors
+        IF (void NE 0) AND (void NE 32) THEN $
+           print,'Checking Math: ',void,prob_list[ii]
         
         ;;**********************************************************
         ;; Check that we only apply the GRS 13CO if the dense gas
         ;;   KDIST has constr = 0
-        IF npgi THEN IF i EQ pgi && constrain[j].kdist THEN BEGIN
-           constrain[j].(i+1) = 0b
+        IF npgi THEN IF ii EQ pgi && constrain[j].kdist THEN BEGIN
+           constrain[j].(ii+1) = 0b
            CONTINUE
         ENDIF
         ;;**********************************************************
@@ -508,16 +517,16 @@ PRO DISTANCE_OMNIBUS, CONFFILE=cfile,CNUM_LIST=cnum_list, VERBOSE=verbose, $
         ;; For kinematic distance DPDFs (i.e. KDIST, GRSMATCH), apply
         ;; the OMNI_KINEMATIC_AVOIDANCE check here, and only multiply in
         ;; the kinematic information if acceptable...
-        IF reject_kd && (strmatch(prob_list[i],'*kdist*') || $
-                         strmatch(prob_list[i],'*grsmatch*')) THEN BEGIN
-           constrain[j].(i+1) = 0b ; Set constraint = 0b
+        IF reject_kd && (strmatch(prob_list[ii],'*kdist*') || $
+                         strmatch(prob_list[ii],'*grsmatch*')) THEN BEGIN
+           constrain[j].(ii+1) = 0b ; Set constraint = 0b
            CONTINUE
         ENDIF
         ;;@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         
         ;; Otherwise, multiply in the computed DPDF if constrain = 1b
-        IF constrain[j].(i+1) THEN pvec[j].post *= pvec[j].(i+1)
-     ENDFOR
+        IF constrain[j].(ii+1) THEN pvec[j].post *= pvec[j].(ii+1)
+     ENDFOR                     ; End of loop over probabilities
      
      ;; Normalize to unit integral probability
      pvec[j].post /= TOTAL(pvec[j].post)
@@ -679,6 +688,9 @@ PRO DISTANCE_OMNIBUS, CONFFILE=cfile,CNUM_LIST=cnum_list, VERBOSE=verbose, $
           (dpdfs.fits ? 'and FITS file containing the posterior DPDFs ':'')+$
           'may be found in the local/ directory (i.e. local/'+conf.survey+$
           '_pvec.sav).',/inf
+  message,'',/inf
+  message,'Routine completed at:',/inf
+  message,systime(0),/inf
   
   RETURN
 END

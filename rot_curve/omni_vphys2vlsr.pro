@@ -21,6 +21,8 @@
 ; OPTIONAL INPUTS:
 ;       VS    -- Circular velocity decrement to be applied for HMSFRs
 ;                (Default: MW.VS) [km/s]
+;       US    -- Bulk velocity of HMSFRs toward the GC
+;                (Default: MW.US) [km/s]
 ;
 ; KEYWORD PARAMETERS:
 ;       NONE
@@ -99,6 +101,11 @@
 ;                                   fancy with IDL system variables.
 ;       Modified: 05/08/14, TPEB -- Add check for and definition of
 ;                                   !CONST system variable.
+;       Modified: 09/03/14, TPEB -- Add U_s parameter from Reid et
+;                                   al. (2014) into the calculation.
+;                                   This produces at most a 0.2-kpc
+;                                   correction in the distance to an
+;                                   object.
 ;
 ;-
 
@@ -120,7 +127,8 @@ FUNCTION OMNI_VPHYS2VLSR, l, b, d, VS=vs, VOBS=vobs
         omni_lbd2rz, l, b, d, r, z, R0=R0, THETA=theta
         V0 = MW.V0
         VR = V0
-        IF n_elements(vs) EQ 0 THEN vs = MW.VS   ;; Correction for HMSFR
+        IF n_elements(vs) EQ 0 THEN vs = MW.VS   ;; Correction for HMSFR (V)
+        IF n_elements(us) EQ 0 THEN us = MW.US   ;; Ditto (U)
      END
      'IAU': BEGIN               ; IAU Standard Curve
         R0 = 8500.
@@ -129,6 +137,7 @@ FUNCTION OMNI_VPHYS2VLSR, l, b, d, VS=vs, VOBS=vobs
         V0 = 220.
         VR = V0
         vs = 0.              
+        us = 0.
      END
      'CLEM': BEGIN              ; Clemens (1985) Curve
         R0 = 8500.
@@ -137,6 +146,7 @@ FUNCTION OMNI_VPHYS2VLSR, l, b, d, VS=vs, VOBS=vobs
         V0 = (clemens_rotcurve(1.))[0]
         VR = clemens_rotcurve(r / R0)
         vs = 0.
+        us = 0.
      END
      'RBAR': BEGIN              ; Reid, with a bar
         R0 = MW.R0  
@@ -144,14 +154,16 @@ FUNCTION OMNI_VPHYS2VLSR, l, b, d, VS=vs, VOBS=vobs
         omni_lbd2rz, l, b, d, r, z, R0=R0, THETA=theta
         V0 = (reid_bar_rotcurve(1.))[0]
         VR = reid_bar_rotcurve(r / R0)
-        IF n_elements(vs) EQ 0 THEN vs = MW.VS   ;; Correction for HMSFR
+        IF n_elements(vs) EQ 0 THEN vs = MW.VS   ;; Correction for HMSFR (V)
+        IF n_elements(us) EQ 0 THEN us = MW.US   ;; Ditto (U)
      END
      'SPTST': BEGIN             ; Junk?
         R0 = MW.R0
         omni_lbd2rz, l, b, d, r, z, R0=R0, THETA=theta
         V0 = 250.
         VR = V0
-        IF n_elements(vs) EQ 0 THEN vs = MW.VS   ;; Correction for HMSFR
+        IF n_elements(vs) EQ 0 THEN vs = MW.VS   ;; Correction for HMSFR (V)
+        IF n_elements(us) EQ 0 THEN us = MW.US   ;; Ditto (U)
      END
      ELSE: message,'Unrecognized rotation curve '+mw.curve+$
                    ' specified in galactic-params'
@@ -161,7 +173,8 @@ FUNCTION OMNI_VPHYS2VLSR, l, b, d, VS=vs, VOBS=vobs
   phi = !dpi/2.d - l*!const.dtor - theta
   
   ;; This is VLSR for correct LSR
-  vobs = (vR-vs)*cos(b*!const.dtor)*cos(phi) - v0*sin(l*!const.dtor)
+  vobs = (vR-vs)*cos(b*!const.dtor)*cos(phi) - v0*sin(l*!const.dtor) + $
+         (us)*cos(b*!const.dtor)*sin(phi) ;; Correction for U_s motion
   ;; The IAU curve assumes that observed LSR is the 'correct' LSR
   IF mw.curve EQ 'IAU' THEN RETURN,vobs
   

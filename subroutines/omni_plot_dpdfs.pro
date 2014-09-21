@@ -21,6 +21,7 @@
 ;
 ; OPTIONAL INPUTS:
 ;       BASECS -- Base charsize to be used for plotting [Default: 1.0]
+;       BASELS -- Base linsize to be used for al_legend [Default: 1.0]
 ;
 ; KEYWORD PARAMETERS:
 ;       NONE
@@ -42,6 +43,7 @@
 ;       Modified: 12/12/13, TPEB -- Added color for HRDS proir DPDF.
 ;       Modified: 04/11/14, TPEB -- Add additional distance diagnostic
 ;                                   output.
+;       Modified: 09/05/14, TPEB -- Plotting changes.
 ;
 ;-
 
@@ -64,7 +66,7 @@ FUNCTION OMNI_PLOT_DPDFS_COLOR, tagname
 END
 
 
-PRO OMNI_PLOT_DPDFS, p, BASECS=basecs
+PRO OMNI_PLOT_DPDFS, p, BASECS=basecs, BASEls=basels, PAPER=paper
   
   COMPILE_OPT IDL2, LOGICAL_PREDICATE
   
@@ -73,6 +75,7 @@ PRO OMNI_PLOT_DPDFS, p, BASECS=basecs
   
   ;; Parse input
   IF ~n_elements(basecs) THEN basecs = 1.0
+  IF ~n_elements(basels) THEN basels = 1.0
   
   ;; Load configuration files, as necessary
   IF ~exist(conf) THEN conf = omni_load_conf()
@@ -112,7 +115,7 @@ PRO OMNI_PLOT_DPDFS, p, BASECS=basecs
   legcol = !null
   FOR ii=1,ndpdf DO BEGIN
      IF min(p.(ii)) EQ max(p.(ii)) THEN CONTINUE
-     tags = [tags,tnames[ii]]
+     tags = [tags,translate_dpdf_tag(tnames[ii],/IDL)]
      legcol = [legcol,omni_plot_dpdfs_color(tnames[ii])]
      cgOplot,d,p.(ii),color=omni_plot_dpdfs_color(tnames[ii])
   ENDFOR
@@ -121,20 +124,28 @@ PRO OMNI_PLOT_DPDFS, p, BASECS=basecs
   IF do_dtan THEN cgText,p.stat.dtan/1.d3+0.1,0.90*!y.crange[1],'d!dtan!n',$
                          charsize=0.8*basecs,color='brown'
   
-  al_legend,/top,/right,linsize=1.0,tags,color=legcol,charsize=0.8*basecs,$
+  al_legend,/top,/right,linsize=basels,tags,color=legcol,charsize=0.8*basecs,$
             linestyle=0,box=0
   
-  cgText,15,0.50*!y.crange[1],charsize=0.9*basecs,'P!dML!n = '+$
-         string(p.stat.pml,format="(F0.3)")
-  cgText,15,0.45*!y.crange[1],charsize=0.9*basecs,'d!dML!n = '+$
-         string(p.stat.dml[0]/1.d3,format="(F0.3)")+' kpc'
-  cgText,15,0.40*!y.crange[1],charsize=0.9*basecs,'d!dbar!n = '+$
-         string(p.stat.dbar[0]/1.d3,format="(F0.3)")+' kpc'
-  cgText,15,0.35*!y.crange[1],charsize=0.9*basecs,'d!duse!n = '+$
-         string(p.stat.duse[0]/1.d3,format="(F0.3)")+' kpc'
-  cgText,15,0.30*!y.crange[1],charsize=0.9*basecs,'FW!d68!n = '+$
-         string(p.stat.fw68/1.d3,format="(F0.3)")+' kpc'
-         
+  IF KEYWORD_SET(paper) THEN BEGIN
+     cgText,14,0.45*!y.crange[1],charsize=0.85*basecs,'P!dML!n = '+$
+            string(p.stat.pml,format="(F0.2)")
+     cgText,14,0.35*!y.crange[1],charsize=0.85*basecs,'d'+cgSymbol('sun')+$
+            ' = '+string(p.stat.duse[0]/1.d3,format="(F0.2)")+' kpc'
+     cgText,14,0.25*!y.crange[1],charsize=0.85*basecs,'FW!d68!n = '+$
+            string(p.stat.fw68/1.d3,format="(F0.2)")+' kpc'
+  ENDIF ELSE BEGIN
+     cgText,15,0.50*!y.crange[1],charsize=0.85*basecs,'P!dML!n = '+$
+            string(p.stat.pml,format="(F0.3)")
+     cgText,15,0.45*!y.crange[1],charsize=0.85*basecs,'d!dML!n = '+$
+            string(p.stat.dml[0]/1.d3,format="(F0.3)")+' kpc'
+     cgText,15,0.40*!y.crange[1],charsize=0.85*basecs,'d!dbar!n = '+$
+            string(p.stat.dbar[0]/1.d3,format="(F0.3)")+' kpc'
+     cgText,15,0.35*!y.crange[1],charsize=0.85*basecs,'d!duse!n = '+$
+            string(p.stat.duse[0]/1.d3,format="(F0.3)")+' kpc'
+     cgText,15,0.30*!y.crange[1],charsize=0.85*basecs,'FW!d68!n = '+$
+            string(p.stat.fw68/1.d3,format="(F0.3)")+' kpc'
+  ENDELSE
   
   RETURN
 END

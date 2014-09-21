@@ -58,6 +58,10 @@
 ;       Modified: 04/11/14, TPEB -- Adjusted the normalized 3D
 ;                                   distance to v^4 to account for the
 ;                                   turbulent structure function.
+;       Modified: 09/21/14, TPEB -- Adjust parallax array to NOT start
+;                                   at zero, since d = 1/pxarr.  No
+;                                   infinite distances, and we want to
+;                                   silence any Math Errors.
 ;
 ;-
 
@@ -125,8 +129,8 @@ FUNCTION PROB_PARALLAX, s, DVEC = dvec, CONSTRAIN = constrain
   ;;===========================================
   ;; Build the DPDF
   
-  pxarr = dindgen(10001) * 4.d-4 ; Parallax array
-  dpdf  = d * 0.d                ; DPDF array
+  pxarr = (dindgen(10000)+1.d) * 4.d-4 ; Parallax array (don't start at 0)
+  dpdf  = d * 0.d                      ; DPDF array
   
   ;; Loop through the number of parallaxs associated with this 
   ;;   catalog object. 
