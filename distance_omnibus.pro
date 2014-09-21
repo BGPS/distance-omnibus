@@ -184,6 +184,9 @@
 ;                                   execution if an error is detected.
 ;       Modified: 06/30/14, TPEB -- Add check for appropriate IDL
 ;                                   version.
+;       Modified: 09/21/14, TPEB -- Add timestamp on the "all done"
+;                                   message printed at conclusion of
+;                                   routine.
 ;
 ;-
 
@@ -679,6 +682,9 @@ PRO DISTANCE_OMNIBUS, CONFFILE=cfile,CNUM_LIST=cnum_list, VERBOSE=verbose, $
           (dpdfs.fits ? 'and FITS file containing the posterior DPDFs ':'')+$
           'may be found in the local/ directory (i.e. local/'+conf.survey+$
           '_pvec.sav).',/inf
+  message,'',/inf
+  message,'Routine completed at:',/inf
+  message,systime(0),/inf
   
   RETURN
 END
