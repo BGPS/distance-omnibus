@@ -51,7 +51,7 @@
 ;       Modified: 11/19/13, TPEB -- Did slight modification for faster
 ;                                   runtime -- no other outwardly
 ;                                   visible changes.
-;       Modified: 11/12/13, TPEB -- Fixed bug introduced with above
+;       Modified: 11/21/13, TPEB -- Fixed bug introduced with above
 ;                                   performance-enhancing drug.
 ;       Modified: 09/17/14, TPEB -- Fix issue when multiple peaks are
 ;                                   NOT separated by a valley dipping
@@ -73,6 +73,13 @@
 ;                                   criteria for multiple peaks in the
 ;                                   spectrum.  Add Check_Math() calls
 ;                                   to silence underflow errors.
+;       Modified: 09/27/14, TPEB -- Add !EXCEPT=0 statements to make
+;                                   MPFIT shut up about underflow
+;                                   errors.  Also, correct an issue
+;                                   with the "Big Island" fix when
+;                                   single-element summits were being
+;                                   ignored despite being the
+;                                   brightest one. 
 ;
 ;-
 
@@ -82,6 +89,8 @@ PRO OMNI_GRS_MASKSPEC, spectrum, flag
   
   COMMON OMNI_CONFIG, conf, mw, local, dpdfs, ancil, fmt, conffile
   COMMON GRS_BLOCK, grs, grsexist, v_std
+  
+  !except = 0                   ; Shut the hell up MPFIT!
   
   flag = 0b                     ; Non-detection
   
@@ -136,44 +145,50 @@ PRO OMNI_GRS_MASKSPEC, spectrum, flag
   FOR jj=0, nseg-1 DO BEGIN     ; Loop over segments
      si2 = si[sti:ij[jj]]       ; Array elements for this peak
      sti = ij[jj] + 1           ; Set up for start of next peak
+     kk++                       ; Increment KK counter
      
-     ;; Check size of this peak... if less than 2, then skip to next peak
-     IF n_elements(si2) LT 2 THEN CONTINUE
-     kk++                       ; Increment KK counter if not skipped
+     spec_seg = spectrum[si2]            ; Extract just this peak
+     v_seg    = v_std[si2]               ; Velocities for this peak
+     seg_inds = lindgen(n_elements(si2)) ; Indices within this peak
+     seg_sti  = 0                        ; Index within this peak
      
-     ;; Check to see if this peak is a "Big Island" type island,
-     ;;    meaning there are multiple summits in a single island
-     ;;    rising above the THRESHOLD sea.  Compute the
-     ;;    "derivative" of the spectrum & look for discontinuous
-     ;;    regions for the positive "slope".  (Quotes used
-     ;;    because we're not dividing by dx here... only
-     ;;    using dy).
-     spec_seg = spectrum[si2]                 ; Extract just this peak
-     dy       = spec_seg[1:*] - spec_seg[0:*] ; Compute dy
-     seg_sti  = 0                             ; Index within this peak
-     seg_inds = lindgen(n_elements(si2))      ; Indices within this peak
-     v_seg    = v_std[si2]                    ; Velocities for this peak
-     
-     ;; Find elements of - slope, add last element for proper operation
-     downslope  = [where(dy LT 0.),n_elements(spec_seg)-1]
-     ;; Steps between indices for regions of - slope.
-     sl_step = downslope[1:*] - downslope[0:*]
-     
-     void = Check_Math()        ; Clear out Math Errors
-     
-     ;; Compute the number and location(s) of "saddle points",
-     ;;    where n_saddle = # jumps in downslope
-     ;;    == First, compute the number of summits based on SL_STEP
-     kl = [where(sl_step NE 1),n_elements(downslope)-1] ; Find the jumps
-     kl = kl[where(kl GE 0)]       ; Remove any "-1" that may exist.
-     kl = kl[uniq(kl,sort(kl))]    ; Make unique
-     n_summit = n_elements(kl)     ; N summits
-     
-     
-     ;; Indices of Saddle Locations.  Note that if n_saddle == 0,
-     ;;   then kl = -1, which places saddles = last element of
-     ;;   segment, which is just where we want it! 
-     saddles = downslope[kl]
+     ;; Check size of this peak... if less than 2, then skip "Big Island"
+     IF n_elements(si2) GE 2 THEN BEGIN
+        
+        ;; Check to see if this peak is a "Big Island" type island,
+        ;;    meaning there are multiple summits in a single island
+        ;;    rising above the THRESHOLD sea.  Compute the
+        ;;    "derivative" of the spectrum & look for discontinuous
+        ;;    regions for the positive "slope".  (Quotes used
+        ;;    because we're not dividing by dx here... only
+        ;;    using dy).
+        dy       = spec_seg[1:*] - spec_seg[0:*] ; Compute dy
+        
+        ;; Find elements of - slope, add last element for proper operation
+        downslope  = [where(dy LT 0.),n_elements(spec_seg)-1]
+        ;; Steps between indices for regions of - slope.
+        sl_step = downslope[1:*] - downslope[0:*]
+        
+        void = Check_Math()     ; Clear out Math Errors
+        
+        ;; Compute the number and location(s) of "saddle points",
+        ;;    where n_saddle = # jumps in downslope
+        ;;    == First, compute the number of summits based on SL_STEP
+        kl = [where(sl_step NE 1),n_elements(downslope)-1] ; Find the jumps
+        kl = kl[where(kl GE 0)]    ; Remove any "-1" that may exist.
+        kl = kl[uniq(kl,sort(kl))] ; Make unique
+        n_summit = n_elements(kl)  ; N summits
+        
+        ;; Indices of Saddle Locations.  Note that if n_saddle == 0,
+        ;;   then kl = -1, which places saddles = last element of
+        ;;   segment, which is just where we want it!
+        saddles = downslope[kl]
+        
+     ENDIF ELSE BEGIN
+        void = Check_Math()     ; Clear out Math Errors
+        n_summit = 1            ; There be only a single summit, matey.
+        saddles  = n_elements(spec_seg)-1 ; Define "saddle" as last element
+     ENDELSE
      
      ;; Loop through summits
      FOR ll=0, n_summit-1 DO BEGIN
@@ -201,13 +216,17 @@ PRO OMNI_GRS_MASKSPEC, spectrum, flag
   
   void = Check_Math()           ; Clear out Math Errors
   
+  !except = 1                   ; Return exception reporting to normal
+  
   ;; Convert the LIST to an ARRAY for analysis.  First, remove the
-  ;;   '!null' in the last element.
+  ;;   '!null' in the last element and count elements.
   tas.remove
   tas = tas.ToArray()
+  nseg = n_elements(tas)        ; Redefine nseg, in the event of "Big Islands"
+  IF (kk+1) NE nseg THEN print,kk+1,nseg
   
   ;; Error checking
-  IF tpk EQ 0 THEN BEGIN
+  IF (tpk EQ 0) || (nseg EQ 0) THEN BEGIN
      spectrum *= 0.
      RETURN
   ENDIF
@@ -215,7 +234,6 @@ PRO OMNI_GRS_MASKSPEC, spectrum, flag
   ;; Check the ratio of TA* between primary and secondary
   ;;   peak -- If LT SPECIFIED VALUE, then return uniform
   ;;           DPDF, since the peaks are indistinguishable. 
-  nseg = n_elements(tas)        ; Redefine nseg, in the event of "Big Islands"
   rat = tpk / tas
   
   ;; SET FLAGS APPROPRIATELY: 0,1,2,3
