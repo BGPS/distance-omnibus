@@ -45,6 +45,11 @@
 ;                                   and generalized configuration file
 ;                                   input: made compatible with the new
 ;                                   framework.
+;       Modified: 09/28/14, TPEB -- Correct convention that V_s is in
+;                                   the direction of Galactic
+;                                   rotation, and is therefore
+;                                   negative for counterrotation;
+;                                   change the "-" to "+".
 ;
 ;-
 
@@ -90,7 +95,7 @@ FUNCTION KDIST_IAU, l, b, v, NEAR=near, FAR=far, R0=r0, V0=v0, RGAL=rgal, $
          bigw*sin(b*!dtor)
   
   ;; This is r/r0
-  null = (v0/(v0-vs)+vlsr/((v0-vs)*sin(l*!dtor)*cos(b*!dtor)))^(-1)
+  null = (v0/(v0+vs)+vlsr/((v0+vs)*sin(l*!dtor)*cos(b*!dtor)))^(-1)
   
   ;;  The > 0 traps things near the tangent point and sets them to the
   ;;  tangent distance.  So quietly.  Perhaps this should pitch a flag?

@@ -21,7 +21,8 @@
 ; OPTIONAL INPUTS:
 ;       DVDR  -- Deviation from a "flat" rotation curve
 ;                (Default: MW.DVDR) [km/s/kpc]
-;       VS    -- Circular velocity decrement to be applied for HMSFRs
+;       VS    -- Bulk velocity of HMSFRs in the direction of rotation
+;                (negative for a lag or counterrotation)
 ;                (Default: MW.VS) [km/s]
 ;       US    -- Bulk velocity of HMSFRs toward the GC
 ;                (Default: MW.US) [km/s]
@@ -110,6 +111,11 @@
 ;                                   object.
 ;       Modified: 09/28/14, TPEB -- Add DV/DR parameter from Reid et
 ;                                   al. (2014) into the calculation.
+;                                   Correct convention that V_s is in
+;                                   the direction of Galactic
+;                                   rotation, and is therefore
+;                                   negative for counterrotation;
+;                                   change the "-" to "+".
 ;
 ;-
 
@@ -178,7 +184,7 @@ FUNCTION OMNI_VPHYS2VLSR, l, b, d, VS=vs, US=us, DVDR=dvdr, VOBS=vobs
   phi = !dpi/2.d - l*!const.dtor - theta
   
   ;; This is VLSR for correct LSR
-  vobs = (vR-vs)*cos(b*!const.dtor)*cos(phi) - v0*sin(l*!const.dtor) + $
+  vobs = (vR+vs)*cos(b*!const.dtor)*cos(phi) - v0*sin(l*!const.dtor) + $
          (us)*cos(b*!const.dtor)*sin(phi) ;; Correction for U_s motion
   ;; The IAU curve assumes that observed LSR is the 'correct' LSR
   IF mw.curve EQ 'IAU' THEN RETURN,vobs
