@@ -29,4 +29,4 @@ Because **distance-omnibus** estimates the distance to dense molecular cloud str
 =======
 ### Release Information
 
-Pre-release version [v0.9.5](https://github.com/BGPS/distance-omnibus/archive/v0.9.5.tar.gz) available as of 9/21/14.
+Pre-release version [v0.9.6](https://github.com/BGPS/distance-omnibus/archive/v0.9.6.tar.gz) available as of 9/29/14.
