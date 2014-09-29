@@ -19,7 +19,10 @@
 ;       D     -- [pc]  Heliocentric Distance (scalar or vector)
 ;
 ; OPTIONAL INPUTS:
-;       VS    -- Circular velocity decrement to be applied for HMSFRs
+;       DVDR  -- Deviation from a "flat" rotation curve
+;                (Default: MW.DVDR) [km/s/kpc]
+;       VS    -- Bulk velocity of HMSFRs in the direction of rotation
+;                (negative for a lag or counterrotation)
 ;                (Default: MW.VS) [km/s]
 ;       US    -- Bulk velocity of HMSFRs toward the GC
 ;                (Default: MW.US) [km/s]
@@ -106,10 +109,17 @@
 ;                                   This produces at most a 0.2-kpc
 ;                                   correction in the distance to an
 ;                                   object.
+;       Modified: 09/28/14, TPEB -- Add DV/DR parameter from Reid et
+;                                   al. (2014) into the calculation.
+;                                   Correct convention that V_s is in
+;                                   the direction of Galactic
+;                                   rotation, and is therefore
+;                                   negative for counterrotation;
+;                                   change the "-" to "+".
 ;
 ;-
 
-FUNCTION OMNI_VPHYS2VLSR, l, b, d, VS=vs, VOBS=vobs
+FUNCTION OMNI_VPHYS2VLSR, l, b, d, VS=vs, US=us, DVDR=dvdr, VOBS=vobs
   
   COMPILE_OPT IDL2, LOGICAL_PREDICATE
   compat_const                  ; Check for the !CONST system variable
@@ -121,14 +131,15 @@ FUNCTION OMNI_VPHYS2VLSR, l, b, d, VS=vs, VOBS=vobs
   
   ;; Choose R0 & V0 based on rotation curve desired
   CASE mw.curve OF
-     'REID': BEGIN              ; Reid (2009) curve, modified
+     'REID': BEGIN              ; Reid (2014) curve
         R0 = MW.R0
         ;; Create various projected distance arrays
         omni_lbd2rz, l, b, d, r, z, R0=R0, THETA=theta
         V0 = MW.V0
-        VR = V0
-        IF n_elements(vs) EQ 0 THEN vs = MW.VS   ;; Correction for HMSFR (V)
-        IF n_elements(us) EQ 0 THEN us = MW.US   ;; Ditto (U)
+        IF n_elements(dvdr) EQ 0 THEN dvdr = MW.DVDR ; Deviation from flat
+        VR = V0 + dvdr * (r - R0)/1.d3               ; DVDR given in km/s/kpc
+        IF n_elements(vs) EQ 0 THEN vs = MW.VS       ; Correction for HMSFR (V)
+        IF n_elements(us) EQ 0 THEN us = MW.US       ; Ditto (U)
      END
      'IAU': BEGIN               ; IAU Standard Curve
         R0 = 8500.
@@ -173,7 +184,7 @@ FUNCTION OMNI_VPHYS2VLSR, l, b, d, VS=vs, VOBS=vobs
   phi = !dpi/2.d - l*!const.dtor - theta
   
   ;; This is VLSR for correct LSR
-  vobs = (vR-vs)*cos(b*!const.dtor)*cos(phi) - v0*sin(l*!const.dtor) + $
+  vobs = (vR+vs)*cos(b*!const.dtor)*cos(phi) - v0*sin(l*!const.dtor) + $
          (us)*cos(b*!const.dtor)*sin(phi) ;; Correction for U_s motion
   ;; The IAU curve assumes that observed LSR is the 'correct' LSR
   IF mw.curve EQ 'IAU' THEN RETURN,vobs
