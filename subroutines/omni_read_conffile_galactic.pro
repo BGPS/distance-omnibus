@@ -48,6 +48,8 @@
 ;                                   separate file.
 ;       Modified: 09/03/14, TPEB -- Add rotation curve parameter U_s,
 ;                                   as in Reid et al. (2014)
+;       Modified: 09/28/14, TPEN -- Add rotation curve parameter DV/DR
+;                                   as in Reid et al. (2014)
 ;
 ;-
 
@@ -60,6 +62,7 @@ FUNCTION OMNI_READ_CONFFILE_GALACTIC, lun, conffile, lnum
   ;; Create the configuration structure for TYPE galactic
   conf = {r0:0.d,$
           v0:0.d,$
+          dvdr:0.d,$
           vs:0.d,$
           us:0.d,$
           errvlsr:0.d,$
@@ -82,6 +85,7 @@ FUNCTION OMNI_READ_CONFFILE_GALACTIC, lun, conffile, lnum
      CASE key OF
         'r0':         conf.r0         = (nword EQ 1) ? 0.d : double(val)
         'v0':         conf.v0         = (nword EQ 1) ? 0.d : double(val)
+        'dvdr':       conf.dvdr       = (nword EQ 1) ? 0.d : double(val)
         'vs':         conf.vs         = (nword EQ 1) ? 0.d : double(val)
         'us':         conf.us         = (nword EQ 1) ? 0.d : double(val)
         'errvlsr':    conf.errvlsr    = (nword EQ 1) ? 0.d : double(val)
