@@ -45,6 +45,7 @@
 ;                                   output.
 ;       Modified: 09/05/14, TPEB -- Plotting changes.
 ;       Modified: 09/29/14, TPEB -- Mucking around for the paper.
+;       Modified: 11/02/14, TPEB -- More mucking.
 ;
 ;-
 
@@ -59,8 +60,8 @@ FUNCTION OMNI_PLOT_DPDFS_COLOR, tagname
      'H2':       RETURN,'BLU5'
      'EMAF':     RETURN,'Crimson'
      'KNOWND':   RETURN,'BLK5'
-     'PARALLAX': RETURN,'PUR5'
-     'HRDS':     RETURN,'ORG7'
+     'PARALLAX': RETURN,'BLK5'
+     'HRDS':     RETURN,'PUR7'
      'POST':     RETURN,'Black'
      ELSE:       RETURN,'Deep Pink'
   ENDCASE
@@ -148,12 +149,37 @@ PRO OMNI_PLOT_DPDFS, p, BASECS=basecs, BASEls=basels, PAPER=paper, $
   ;; Plot the requisite DPDFs, leaving out the uniform priors
   tags   = !null
   legcol = !null
+  legls  = !null
+  legthk = !null
   norm = KEYWORD_SET(paper) ? ymax : 1.0
   FOR ii=1,ndpdf DO BEGIN
      IF min(p.(ii)) EQ max(p.(ii)) THEN CONTINUE
      tags = [tags,translate_dpdf_tag(tnames[ii],/IDL)]
+     thick = 2.0 + 1.0*(ii EQ ndpdf)
+     CASE tnames[ii] OF
+        'H2': BEGIN
+           linestyle = 1
+           p.(ii) *= 4.
+        END
+        'EMAF': BEGIN
+           linestyle = 2
+           p.(ii) *= 3.
+        END
+        'PARALLAX': BEGIN
+           linestyle = 5
+           p.(ii) *= 1.0
+        END
+        'HRDS': BEGIN
+           linestyle = 3
+           p.(ii) *= 1.
+        END
+        ELSE   : linestyle = 0
+     ENDCASE
      legcol = [legcol,omni_plot_dpdfs_color(tnames[ii])]
-     cgOplot,d,p.(ii)/norm,color=omni_plot_dpdfs_color(tnames[ii])
+     legls =  [legls,linestyle]
+     legthk = [legthk,thick]
+     cgOplot,d,p.(ii)/norm,color=omni_plot_dpdfs_color(tnames[ii]),$
+             thick=thick,linestyle=linestyle
   ENDFOR
   
   ;; Add various notations to the plot
@@ -163,8 +189,8 @@ PRO OMNI_PLOT_DPDFS, p, BASECS=basecs, BASEls=basels, PAPER=paper, $
   name = 'G'+string(p.glon,p.glat,format="(F07.3,F+07.3)")
   
   al_legend,/top,/right,linsize=basels,['',tags],color=['background',legcol],$
-            charsize=0.8*basecs,$
-            linestyle=0,box=0,spacing=basecs*1.1
+            charsize=0.8*basecs,thick=[1,legthk],$
+            linestyle=[0,legls],box=0,spacing=basecs*1.1
   al_legend,/top,/right,[name],$
             charsize=0.9*basecs,$
             box=0,spacing=basecs*0.8
