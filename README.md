@@ -21,7 +21,7 @@ Several external libraries of IDL routines are also required to run **distance-o
 =======
 ### Data Requirements
 
-##### BGPS-Produced Data 
+#### BGPS-Produced Data 
 
 For the Eight-Micron Absorption Feature (EMAF) DPDF method, the distribution of Galactic mid-infrared emission described in [Ellsworth-Bowers et al. (2013)](http://adsabs.harvard.edu/abs/2013ApJ...770...39E), computed from the model of [Robitaille et al. (2012, A&A, 545, 39](http://adsabs.harvard.edu/abs/2012A%26A...545A..39R), is required.  The **distance-omnibus** code uses a FITS file of this distribution, computed using the [Janus supercomputer](https://www.rc.colorado.edu/services/compute/janus).  The FITS cube of *foreground emission fraction* may be found at [http://casa.colorado.edu/~ellswotp/BGPS_12/MW_model_ffore.fits](http://casa.colorado.edu/~ellswotp/BGPS_12/MW_model_ffore.fits).
 
@@ -29,7 +29,7 @@ Additionally, for the EMAF method, star-subtracted versions of the *Spitzer*/GLI
 
 
 
-##### Ancillary Data 
+#### Ancillary Data 
 
 Because **distance-omnibus** estimates the distance to dense molecular cloud structures in the Milky Way based in part on ancillary data, the following data sets are required:
 * The *Spitzer*/GLIMPSE mid-infrared survey V3.5 mosaics (available for the [GLIMPSE I](http://irsa.ipac.caltech.edu/data/SPITZER/GLIMPSE/images/I/1.2_mosaics_v3.5/) and [GLIMPSE II](http://irsa.ipac.caltech.edu/data/SPITZER/GLIMPSE/images/II/1.2_mosaics_v3.5/) coverage regions).  Specifically required are the Band 1 and Band 4 images (`*_I1.fits` and `*_I4.fits`).
