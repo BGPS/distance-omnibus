@@ -14,7 +14,7 @@ Files in this directory under version control:
 ----------------------------------------------
 
 ### Survey-specific Configuration Files ###
-survey_info.conf       -- Symlink to or file containing survey information
+survey_info.conf       -- Blank configuration file, ready for use.
 survey_info_bgps2.conf -- Bolocam Galactic Plane Survey V2.0 
 survey_info.blank      -- Config file with all entries blank
 
@@ -38,3 +38,4 @@ Changelog:
    Created:  02/14/13, TPEB -- Initial version.
    Modified: 02/21/13, TPEB -- Added mention of additional README files
    Modified: 02/27/14, TPEB -- Clean up of documentation.
+   Modified: 11/11/14, TPEB -- Clean up prior to release.
