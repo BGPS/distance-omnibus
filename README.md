@@ -26,20 +26,20 @@ Several external libraries of IDL routines are also required to run **distance-o
 
 #### BGPS-Produced Data 
 
-For the Eight-Micron Absorption Feature (EMAF) DPDF method, the distribution of Galactic mid-infrared emission, as described in [Ellsworth-Bowers et al. (2013)](http://adsabs.harvard.edu/abs/2013ApJ...770...39E) and computed from the model of  [Robitaille et al. (2012, A&A, 545, 39)](http://adsabs.harvard.edu/abs/2012A%26A...545A..39R), is required.  The version of the model used here is distributed as a FITS file, computed using the [Janus supercomputer](https://www.rc.colorado.edu/services/compute/janus), and may be found at [http://casa.colorado.edu/~ellswotp/BGPS_12/MW_model_ffore.fits](http://casa.colorado.edu/~ellswotp/BGPS_12/MW_model_ffore.fits).  This file contains the *foregrond emission fraction* as a function of Galactic coordinates and heliocentric distance (*l,b,d&#9737;*).
+For the Eight-Micron Absorption Feature (EMAF) DPDF method, the distribution of Galactic mid-infrared emission, as described in [Ellsworth-Bowers et al. (2013)](http://adsabs.harvard.edu/abs/2013ApJ...770...39E) and computed from the model of  [Robitaille et al. (2012, A&A, 545, 39)](http://adsabs.harvard.edu/abs/2012A%26A...545A..39R), is required.  The version of the model used here is distributed as a FITS file, computed using the [Janus supercomputer](https://www.rc.colorado.edu/services/compute/janus), and may be found at [http://casa.colorado.edu/~ellswotp/BGPS_12/MW_model_ffore.fits](http://casa.colorado.edu/~ellswotp/BGPS_12/MW_model_ffore.fits).  This file contains the *foregrond emission fraction* as a function of Galactic coordinates and heliocentric distance (*l,b,d*<sub>&#9737;</sub>).  The location of this file needs to be entered in the `local_layout.conf` configuration file.
 
-Additionally, for the EMAF method, star-subtracted versions of the *Spitzer*/GLIMPSE IRAC Band 4 images (see below) are required.  It is infeasible to host a copy of these files, but the code to produce them is included in this distribution.  Before running the **distance-omnibus** code proper, you must run the routine `omni_glimpse_starsub.pro`.  The star-subtraction process takes a considerable amount of time to run, so please plan accordingly.
+Additionally, for the EMAF method, star-subtracted versions of the *Spitzer*/GLIMPSE IRAC Band 4 images (see below) are required.  It is infeasible for us to host a copy of these files (24 GB), but the code needed to produce them is included in this distribution.  Before running the **distance-omnibus** code proper, you must run the routine `omni_glimpse_starsub.pro`.  The star-subtraction process takes a considerable amount of time to run, so please plan accordingly.
 
 
 
 #### Ancillary Data 
 
-Because **distance-omnibus** estimates the distance to dense molecular cloud structures in the Milky Way based in part on ancillary data, the following data sets are required:
-* The *Spitzer*/GLIMPSE mid-infrared survey V3.5 mosaics (available for the [GLIMPSE I](http://irsa.ipac.caltech.edu/data/SPITZER/GLIMPSE/images/I/1.2_mosaics_v3.5/) and [GLIMPSE II](http://irsa.ipac.caltech.edu/data/SPITZER/GLIMPSE/images/II/1.2_mosaics_v3.5/) coverage regions).  Specifically required are the Band 1 and Band 4 images (`*_I1.fits` and `*_I4.fits`).
-* The BU-FCRAO Galactic Ring Survey <sup>13</sup>CO(1-0) data cubes (available [here](http://grunt.bu.edu/grs-stitch/download-all.php)).  The code assumes you have all the cubes to avoid edge effects.
+Because **distance-omnibus** estimates the distance to dense molecular cloud structures in the Milky Way based in part on ancillary data, the following publiiiiiiically-available data sets are required:
+* The *Spitzer*/GLIMPSE mid-infrared survey V3.5 mosaics (available for the [GLIMPSE I](http://irsa.ipac.caltech.edu/data/SPITZER/GLIMPSE/images/I/1.2_mosaics_v3.5/) and [GLIMPSE II](http://irsa.ipac.caltech.edu/data/SPITZER/GLIMPSE/images/II/1.2_mosaics_v3.5/) coverage regions).  Specifically required are the Band 1 and Band 4 images (`*_I1.fits` and `*_I4.fits`).  (24 GB)
+* The BU-FCRAO Galactic Ring Survey <sup>13</sup>CO(1-0) data cubes (available [here](http://grunt.bu.edu/grs-stitch/download-all.php)).  The code assumes you have the entire list of cubes to avoid edge effects.  (10 GB)
 
 
 =======
 ### Release Information
 
-Pre-release version [v0.9.7](https://github.com/BGPS/distance-omnibus/archive/v0.9.7.tar.gz) available as of 11/11/14.
+Release version [v1.0.0](https://github.com/BGPS/distance-omnibus/archive/v1.0.0.tar.gz) available as of 11/11/14.
