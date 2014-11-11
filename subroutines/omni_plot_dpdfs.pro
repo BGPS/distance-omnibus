@@ -10,7 +10,7 @@
 ;       writing.
 ;
 ; CATEGORY:
-;       distance-omnibus Diagnostic utility
+;       distance-omnibus Diagnostic Utility
 ;
 ; CALLING SEQUENCE:
 ;       OMNI_PLOT_DPDFS, pvec
@@ -45,6 +45,9 @@
 ;                                   output.
 ;       Modified: 09/05/14, TPEB -- Plotting changes.
 ;       Modified: 09/29/14, TPEB -- Mucking around for the paper.
+;       Modified: 11/02/14, TPEB -- Remove paper-specific code,
+;                                   leaving a pure diagnostic within
+;                                   the 'release' branch.
 ;
 ;-
 
@@ -59,16 +62,15 @@ FUNCTION OMNI_PLOT_DPDFS_COLOR, tagname
      'H2':       RETURN,'BLU5'
      'EMAF':     RETURN,'Crimson'
      'KNOWND':   RETURN,'BLK5'
-     'PARALLAX': RETURN,'PUR5'
-     'HRDS':     RETURN,'ORG7'
+     'PARALLAX': RETURN,'BLK5'
+     'HRDS':     RETURN,'PUR7'
      'POST':     RETURN,'Black'
      ELSE:       RETURN,'Deep Pink'
   ENDCASE
 END
 
 
-PRO OMNI_PLOT_DPDFS, p, BASECS=basecs, BASEls=basels, PAPER=paper, $
-                     UL=ul, UR=ur, LL=ll, LR=lr
+PRO OMNI_PLOT_DPDFS, p, BASECS=basecs, BASEls=basels
   
   COMPILE_OPT IDL2, LOGICAL_PREDICATE
   
@@ -79,36 +81,9 @@ PRO OMNI_PLOT_DPDFS, p, BASECS=basecs, BASEls=basels, PAPER=paper, $
   IF ~n_elements(basecs) THEN basecs = 1.0
   IF ~n_elements(basels) THEN basels = 1.0
   
-  ;; Parse panel information, if PAPER
-  IF KEYWORD_SET(paper) THEN BEGIN
-     CASE 1 OF
-        KEYWORD_SET(ul): BEGIN
-           xtit = ''
-           ytit = ''
-           xr=[0,19.999]
-        END
-        KEYWORD_SET(ur): BEGIN
-           xtit = ''
-           ytit = ''
-           xr=[0,20]
-        END
-        KEYWORD_SET(ll): BEGIN
-           xtit = ''
-           ytit = ''
-           xr=[0,19.999]
-        END
-        KEYWORD_SET(lr): BEGIN
-           xtit = ''
-           ytit = ''
-           xr=[0,20]
-        END
-        ELSE: message,'You MUST specify a panel if you want /PAPER.'
-     ENDCASE
-  ENDIF ELSE BEGIN
-     xtit='Heliocentric Distance  [kpc]'
-     ytit='Probability per '+string(p.binsize,format="(I0)")+'-pc bin'
-     xr = [0,20]
-  ENDELSE
+  xtit='Heliocentric Distance  [kpc]'
+  ytit='Probability per '+string(p.binsize,format="(I0)")+'-pc bin'
+  xr = [0,20]
   
   ;; Load configuration files, as necessary
   IF ~exist(conf) THEN conf = omni_load_conf()
@@ -130,13 +105,13 @@ PRO OMNI_PLOT_DPDFS, p, BASECS=basecs, BASEls=basels, PAPER=paper, $
   
   ;; Set up the distance array...
   d = ( dindgen(p.nbins) * p.binsize + p.binstart ) / 1.d3 ; [kpc]
-
   
-  tit = ~KEYWORD_SET(paper) ? string(p.cnum,p.glon,p.glat,format=$
-                                     "('"+conf.survey+" #',"+fmt2+$
-                                     ",'  l = ',F5.1,'  b = ',F5.2)") : ''
   
-  yr = KEYWORD_SET(paper) ? [0,1.1] : [0,ymax]
+  tit =string(p.cnum,p.glon,p.glat,format=$
+              "('"+conf.survey+" #',"+fmt2+$
+              ",'  l = ',F5.1,'  b = ',F5.2)")
+  
+  yr = [0,ymax]
   ;; Set up the plotting environment
   cgPlot,/nodata,charsize=1.0*basecs,d,p.(1),yr=yr,xtit=xtit,ytit=ytit,tit=tit,$
          xr=xr,/xst
@@ -148,12 +123,35 @@ PRO OMNI_PLOT_DPDFS, p, BASECS=basecs, BASEls=basels, PAPER=paper, $
   ;; Plot the requisite DPDFs, leaving out the uniform priors
   tags   = !null
   legcol = !null
-  norm = KEYWORD_SET(paper) ? ymax : 1.0
+  norm = 1.0
   FOR ii=1,ndpdf DO BEGIN
      IF min(p.(ii)) EQ max(p.(ii)) THEN CONTINUE
      tags = [tags,translate_dpdf_tag(tnames[ii],/IDL)]
+     thick = 2.0 + 1.0*(ii EQ ndpdf)
+     CASE tnames[ii] OF
+        'H2': BEGIN
+           linestyle = 1
+           p.(ii) *= 4.
+        END
+        'EMAF': BEGIN
+           linestyle = 2
+           p.(ii) *= 3.
+        END
+        'PARALLAX': BEGIN
+           linestyle = 5
+           p.(ii) *= 1.0
+        END
+        'HRDS': BEGIN
+           linestyle = 3
+           p.(ii) *= 1.
+        END
+        ELSE   : linestyle = 0
+     ENDCASE
      legcol = [legcol,omni_plot_dpdfs_color(tnames[ii])]
-     cgOplot,d,p.(ii)/norm,color=omni_plot_dpdfs_color(tnames[ii])
+     legls =  [legls,linestyle]
+     legthk = [legthk,thick]
+     cgOplot,d,p.(ii)/norm,color=omni_plot_dpdfs_color(tnames[ii]),$
+             thick=thick,linestyle=linestyle
   ENDFOR
   
   ;; Add various notations to the plot
@@ -163,37 +161,22 @@ PRO OMNI_PLOT_DPDFS, p, BASECS=basecs, BASEls=basels, PAPER=paper, $
   name = 'G'+string(p.glon,p.glat,format="(F07.3,F+07.3)")
   
   al_legend,/top,/right,linsize=basels,['',tags],color=['background',legcol],$
-            charsize=0.8*basecs,$
-            linestyle=0,box=0,spacing=basecs*1.1
+            charsize=0.8*basecs,thick=[1,legthk],$
+            linestyle=[0,legls],box=0,spacing=basecs*1.1
   al_legend,/top,/right,[name],$
             charsize=0.9*basecs,$
             box=0,spacing=basecs*0.8
-
-
-
-  IF KEYWORD_SET(paper) THEN BEGIN
-     cgText,14,0.35*!y.crange[1],charsize=0.85*basecs,'P!dML!n = '+$
-            string(p.stat.pml,format="(F0.2)")
-     IF p.stat.fw68/1.d3 GE 2.3 THEN $
-        cgText,14,0.25*!y.crange[1],charsize=0.85*basecs,'d'+cgSymbol('sun')+$
-               ' = ---- kpc' $
-     ELSE $
-        cgText,14,0.25*!y.crange[1],charsize=0.85*basecs,'d'+cgSymbol('sun')+$
-               ' = '+string(p.stat.duse[0]/1.d3,format="(F0.2)")+' kpc'
-     cgText,14,0.15*!y.crange[1],charsize=0.85*basecs,'FW!d68!n = '+$
-            string(p.stat.fw68/1.d3,format="(F0.2)")+' kpc'
-  ENDIF ELSE BEGIN
-     cgText,15,0.50*!y.crange[1],charsize=0.85*basecs,'P!dML!n = '+$
-            string(p.stat.pml,format="(F0.3)")
-     cgText,15,0.45*!y.crange[1],charsize=0.85*basecs,'d!dML!n = '+$
-            string(p.stat.dml[0]/1.d3,format="(F0.3)")+' kpc'
-     cgText,15,0.40*!y.crange[1],charsize=0.85*basecs,'d!dbar!n = '+$
-            string(p.stat.dbar[0]/1.d3,format="(F0.3)")+' kpc'
-     cgText,15,0.35*!y.crange[1],charsize=0.85*basecs,'d!duse!n = '+$
-            string(p.stat.duse[0]/1.d3,format="(F0.3)")+' kpc'
-     cgText,15,0.30*!y.crange[1],charsize=0.85*basecs,'FW!d68!n = '+$
-            string(p.stat.fw68/1.d3,format="(F0.3)")+' kpc'
-  ENDELSE
+    
+  cgText,15,0.50*!y.crange[1],charsize=0.85*basecs,'P!dML!n = '+$
+         string(p.stat.pml,format="(F0.3)")
+  cgText,15,0.45*!y.crange[1],charsize=0.85*basecs,'d!dML!n = '+$
+         string(p.stat.dml[0]/1.d3,format="(F0.3)")+' kpc'
+  cgText,15,0.40*!y.crange[1],charsize=0.85*basecs,'d!dbar!n = '+$
+         string(p.stat.dbar[0]/1.d3,format="(F0.3)")+' kpc'
+  cgText,15,0.35*!y.crange[1],charsize=0.85*basecs,'d!duse!n = '+$
+         string(p.stat.duse[0]/1.d3,format="(F0.3)")+' kpc'
+  cgText,15,0.30*!y.crange[1],charsize=0.85*basecs,'FW!d68!n = '+$
+         string(p.stat.fw68/1.d3,format="(F0.3)")+' kpc'
   
   RETURN
 END
