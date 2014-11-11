@@ -34,7 +34,7 @@ Additionally, for the EMAF method, star-subtracted versions of the *Spitzer*/GLI
 
 #### Ancillary Data 
 
-Because **distance-omnibus** estimates the distance to dense molecular cloud structures in the Milky Way based in part on ancillary data, the following publically available data sets are required:
+Because **distance-omnibus** estimates the distance to dense molecular cloud structures in the Milky Way based in part on ancillary data, the following publicly available data sets are required:
 * The *Spitzer*/GLIMPSE mid-infrared survey V3.5 mosaics (available for the [GLIMPSE I](http://irsa.ipac.caltech.edu/data/SPITZER/GLIMPSE/images/I/1.2_mosaics_v3.5/) and [GLIMPSE II](http://irsa.ipac.caltech.edu/data/SPITZER/GLIMPSE/images/II/1.2_mosaics_v3.5/) coverage regions).  Specifically required are the Band 1 and Band 4 images (`*_I1.fits` and `*_I4.fits`).  (24 GB)
 * The BU-FCRAO Galactic Ring Survey <sup>13</sup>CO(1-0) data cubes (available [here](http://grunt.bu.edu/grs-stitch/download-all.php)).  The code assumes you have the entire list of cubes to avoid edge effects.  (10 GB)
 
