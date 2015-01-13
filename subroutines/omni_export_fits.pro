@@ -235,6 +235,12 @@ PRO OMNI_EXPORT_FITS, fn, CONFFILE=cfile, ALL=all
      head = headfits(fn)
      
      hdr_his = ['==============================',$
+                'The DPDFs contained in this FITS file were computed',$
+                'using the DISTANCE-OMNIBUS code, hosted at',$
+                'https://github.com/BGPS/distance-omnibus and described in',$
+                'Ellsworth-Bowers et al. (2015, ApJ, 799, 29) and',$
+                'Ellsworth-Bowers et al. (2013, ApJ, 770, 39).',$
+                '',$
                 'This FITS file was created by OMNI_EXPORT_FITS',$
                 'on '+systime(0)]
      hdr_leg = ['==============================',$
