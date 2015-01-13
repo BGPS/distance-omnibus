@@ -42,6 +42,6 @@ Because **distance-omnibus** estimates the distance to dense molecular cloud str
 =======
 ### Release Information
 
-Release version [v1.0.0](https://github.com/BGPS/distance-omnibus/archive/v1.0.0.tar.gz) available as of 11/11/14.
+Release version [v1.0.1](https://github.com/BGPS/distance-omnibus/archive/v1.0.1.tar.gz) available as of 01/13/15.
 
-If your work makes use of **distance-omnibus**, please cite the following publications: [Ellsworth-Bowers et al. (2013, ApJ, 770, 39)](http://adsabs.harvard.edu/abs/2013ApJ...770...39E) and [Ellsworth-Bowers et al. (2014, ApJ, in press)](http://adsabs.harvard.edu/abs/2014arXiv1411.2591E).
+If your work makes use of **distance-omnibus**, please cite the following publications: [Ellsworth-Bowers et al. (2013, ApJ, 770, 39)](http://adsabs.harvard.edu/abs/2013ApJ...770...39E) and [Ellsworth-Bowers et al. (2015, ApJ, 799, 29)](http://adsabs.harvard.edu/abs/2014arXiv1411.2591E).
